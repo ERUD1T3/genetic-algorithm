@@ -10,10 +10,10 @@
 import argparse
 
 def parse_args():
-    '''parse the arguments for artificial neural network'''
+    '''parse the arguments for genetic algorithm'''
 
     parser = argparse.ArgumentParser(
-        description='Artificial Neural Network for classification'
+        description='Genetic Algorithm for Machine Learning'
     )
 
     parser.add_argument(
@@ -38,56 +38,48 @@ def parse_args():
     )
 
     parser.add_argument(
-        '-k', '--k-fold',
+        '-p', '--population',
         type=int,
-        required=False,
-        help='number of folds for k-fold cross validation, k=0 or k=1 for no validation'
+        required=True,
+        help='population size (required)'
     )
 
     parser.add_argument(
-        '-w', '--weights',
-        type=str , 
-        required=False,
-        help='path to save the weights (optional)'
+        '-m', '--mutation',
+        type=float, 
+        required=True,
+        help='mutation rate (required)'
     )
 
     parser.add_argument(
-        '-u', '--hidden-units',
+        '-r', '--replacement',
+        type=float, 
+        required=True,
+        help='replacement rate (required)'
+    )
+
+    parser.add_argument(
+        '-g', '--generations',
+        type=int, 
+        required=True,
+        help='number of generations (required)'
+    )
+
+    parser.add_argument(
+        '-f', '--fitness-threshold',
+        type=float, 
+        required=False,
+        help='fitness threshold (optional, \
+            If not provided, GA stops at the end of the generations)',
+    )
+
+    parser.add_argument(
+        '-s', '--selection',
         type=int, 
         required=False,
-        help='number of hidden units (default: 3)'
-    )
-
-    parser.add_argument(
-        '-e', '--epochs',
-        type=int, 
-        required=False,
-        default=10,
-        help='number of epochs (default: 10)'
-    )
-
-    parser.add_argument(
-        '-l', '--learning-rate',
-        type=float, 
-        required=False,
-        default=0.1,
-        help='learning rate (default: 0.01)',
-    )
-
-    parser.add_argument(
-        '-m', '--momentum',
-        type=float, 
-        required=False,
-        default=0.0,
-        help='momentum (default: 0.9)',
-    )
-
-    parser.add_argument(
-        '-g','--decay',
-        type=float, 
-        required=False,
-        default=0.0,
-        help='weight decay gamma (default: 0.01)',
+        default=0,
+        help='selection strategy: 0 for fitness-proportional, \
+             1 for tournament, 2 rank (default: 0)',
     )
 
     parser.add_argument(
@@ -110,59 +102,16 @@ def main():
     training_path = args.training
     testing_path = args.testing
     attributes_path = args.attributes
-    weights_path = args.weights
-    debugging = args.debug
+    population_size = args.population
+    mutation_rate = args.mutation
+    replacement_rate = args.replacement
+    generations = args.generations
+    fitness_threshold = args.fitness_threshold
+    selection_strategy = args.selection
+    debug = args.debug
     
-    # hyperparameters
-    hidden_units = args.hidden_units
-    epochs = args.epochs
-    learning_rate = args.learning_rate
-    decay = args.decay
-    momentum = args.momentum
-    k_folds = args.k_fold
 
-
-    print('\nCreating NN with the parameters provided\n')
-    # create the artificial neural network
-    ann = ANN(
-        training_path, # path to training data
-        testing_path, # path to testing data
-        attributes_path, # path to attributes
-        k_folds, # whether to use validation data
-        weights_path, # path to save weights
-        hidden_units, # number of hidden units
-        learning_rate, # learning rate
-        epochs, # number of epochs, -1 for stopping based on validation
-        momentum, # momentum
-        decay, # weight decay gamma
-        debugging # whether to print debugging statements
-    )
-    # printing the neural network
-    ann.print_network()
-
-
-    print('\nLearning the NN...\n')
-    # train the artificial neural network
-    ann.train()
-    print('\nTraining complete\n')
-
-    #print weights
-    print('\nPrinting learned weights\n')
-    ann.print_weights()
-
-    # save the weights
-    if weights_path:
-        ann.save(weights_path)
-        print('weights saved to', weights_path)
-        # load the weights
-        # ann.load(weights_path)
-        # print('weights loaded from', weights_path)
-
-    # test the artificial neural network
-    print('\nTesting the NN...\n')
-    ann.test()
-    print('\nTesting complete\n')
-
+    
 
     
 if __name__ == '__main__':
