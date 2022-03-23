@@ -8,6 +8,7 @@
 
 # imports
 import argparse
+from genetic import Genetic
 
 def parse_args():
     '''parse the arguments for genetic algorithm'''
@@ -110,7 +111,41 @@ def main():
     selection_strategy = args.selection
     debug = args.debug
     
+    print('\nCreating a Genetic Algorithm object...')
+    ga = Genetic(
+        training_path,
+        testing_path,
+        attributes_path,
+        population_size,
+        mutation_rate,
+        replacement_rate,
+        generations,
+        fitness_threshold,
+        selection_strategy,
+        debug
+    )
 
+    # print genetic algorithm object
+    print('\nGenetic Algorithm object created:')
+    print(ga)
+    
+    # run the genetic algorithm
+    print('\nRunning the Genetic Algorithm...')
+    best = ga.run()
+    print('\nDone!')
+
+    print('\nBest solution found:')
+    print(best)
+
+    # test best solution
+    print('\nTesting the best solution on training set...')
+    accuracy = ga.test(best, ga.training)
+    print('Accuracy:', accuracy, '%')
+
+
+    print('\nTesting the best solution on test set...')
+    accuracy = ga.test(best, ga.testing)
+    print('Accuracy:', accuracy, '%')
     
 
     
