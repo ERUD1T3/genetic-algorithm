@@ -75,11 +75,11 @@ def parse_args():
 
     parser.add_argument(
         '-s', '--selection',
-        type=int, 
+        type=str, 
         required=False,
-        default=0,
-        help='selection strategy: 0 for fitness-proportional, \
-             1 for tournament, 2 rank (default: 0)',
+        default="FP",
+        help='selection strategy: FP for fitness-proportional, \
+             T for tournament, R rank (default: 0)',
     )
 
     parser.add_argument(

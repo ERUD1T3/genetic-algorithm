@@ -1,0 +1,23 @@
+python source/main.py \
+-a data/iris/iris-attr.txt \
+-d data/iris/iris-train.txt \
+-t data/iris/iris-test.txt \
+-p 10 \
+-m .5 \
+-r .5 \
+-g 100 \
+-f .9 \
+-s FP \
+--debug
+
+python source/main.py \
+-a data/tennis/tennis-attr.txt \
+-d data/tennis/tennis-train.txt \
+-t data/tennis/tennis-test.txt \
+-p 10 \
+-m .5 \
+-r .5 \
+-g 100 \
+-f .9 \
+-s FP \
+--debug
