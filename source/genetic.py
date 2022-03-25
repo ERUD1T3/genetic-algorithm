@@ -130,6 +130,17 @@ class Genetic:
         '''Encodes an individual
             data instance -> binary encoded instance
         '''
+        encoded = ""
+
+        for attr in self.inputs:
+            if individual[attr] == '1':
+                encoded += '1'
+            else:
+                encoded += '0'
+
+
+    def decode(self, individual):
+        '''Decodes an individual'''
         pass
 
     def discretize(self, data):
