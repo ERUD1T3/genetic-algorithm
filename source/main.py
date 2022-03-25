@@ -130,22 +130,22 @@ def main():
     print(ga)
     
     # run the genetic algorithm
-    print('\nRunning the Genetic Algorithm...')
-    best = ga.run()
-    print('\nDone!')
+    # print('\nRunning the Genetic Algorithm...')
+    # best = ga.run()
+    # print('\nDone!')
 
-    print('\nBest solution found:')
-    print(best)
+    # print('\nBest solution found:')
+    # print(best)
 
-    # test best solution
-    print('\nTesting the best solution on training set...')
-    accuracy = ga.test(best, ga.training)
-    print('Accuracy:', accuracy, '%')
+    # # test best solution
+    # print('\nTesting the best solution on training set...')
+    # accuracy = ga.test(best, ga.training)
+    # print('Accuracy:', accuracy, '%')
 
 
-    print('\nTesting the best solution on test set...')
-    accuracy = ga.test(best, ga.testing)
-    print('Accuracy:', accuracy, '%')
+    # print('\nTesting the best solution on test set...')
+    # accuracy = ga.test(best, ga.testing)
+    # print('Accuracy:', accuracy, '%')
     
 
     

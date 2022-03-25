@@ -39,14 +39,14 @@ class Genetic:
         self.debug = debug
 
         # read the data
-        self.attributes, self.order = self.read_attributes(attributes)
+        self.attributes, self.inputs, self.outputs = self.read_attributes(attributes)
         self.training = self.read_data(training)
         self.testing = self.read_data(testing)
 
-        if self.debug:
-            print('Attributes: ', self.attributes)
-            print('Order: ', self.order)
-            print('Final Attribute: ', self.order[-1])
+        # if self.debug:
+        #     print('Attributes: ', self.attributes)
+        #     print('Order: ', self.order)
+        #     print('Final Attribute: ', self.order[-1])
 
         # instanting params for the GA
         self.population = []
@@ -55,7 +55,17 @@ class Genetic:
 
     def __repr__(self) -> str:
         '''Returns a string representation of the GA'''
-        pass
+        res = 'Genetic Algorithm\n'
+        res += '- Population: {}\n'.format(self.population)
+        res += '- Mutation: {}\n'.format(self.mutation)
+        res += '- Replacement: {}\n'.format(self.replacement)
+        res += '- Max Generations: {}\n'.format(self.max_generations)
+        res += '- Fitness Threshold: {}\n'.format(self.fitness_threshold)
+        res += '- Selection Type: {}\n'.format(self.selection_type)
+        
+        # might be useful to print the induviduals of the population
+
+        return res
 
 
     # TODO: test this function
@@ -82,7 +92,8 @@ class Genetic:
     def read_attributes(self, path):
         '''Reads attributes from a file'''
         attributes = {}
-        order = []
+        inputs, outputs = [], []
+        is_input = True
 
          # read in the attributes
         with open(path , 'r') as f:
@@ -92,19 +103,28 @@ class Genetic:
                     
                     # storing the attributes
                     attributes[words[0]] = words[1:]
-                    order.append(words[0])
+
+
+                    # storing the inputs and outputs
+                    if is_input:
+                        inputs.append(words[0])
+                    else:
+                        outputs.append(words[0])
+
+                else:
+                    is_input = False
 
                 
         if self.debug:
             print('Attributes: ', attributes)
-            print('Order: ', order)
-            print('Final Attribute: ', order[-1])
+            print('Inputs: ', inputs)
+            print('Outputs: ', outputs)
 
-        if len(order) == 0:
+        if len(attributes) == 0:
             raise Exception('No attributes found')
 
 
-        return attributes, order
+        return attributes, inputs, outputs
 
     def encode(self, individual):
         '''Encodes an individual
