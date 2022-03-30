@@ -14,7 +14,7 @@ python source/main.py \
 -a data/tennis/tennis-attr.txt \
 -d data/tennis/tennis-train.txt \
 -t data/tennis/tennis-test.txt \
--p 500 \  
+-p 500 \
 -m 1e-3 \
 -r .6 \
 -g 100 \

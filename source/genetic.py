@@ -6,6 +6,7 @@
 #   Description: : main genetic algorithm file
 #############################################################
 
+from base64 import encode
 from utils import lg
 from random import randint, uniform, sample
 
@@ -95,6 +96,48 @@ class Genetic:
         
         return res
 
+    def encode_data(self, instance: list[str])->str:
+        '''Encodes the instance'''
+        encoded = ''
+
+        # encode the inputs
+        for v in range(len(self.inputs)):
+            tmp = ''
+            # get value
+            value = instance[v]
+            # get attribute
+            attribute = self.inputs[v]
+            # get number of values
+            num_values = len(self.attributes[attribute])
+            # get index of value in attribute
+            index = self.attributes[attribute].index(value)
+            # set the bit of the index to 1 and rest to 0
+            for i in range(num_values):
+                tmp += '1' if i == index else '0'
+
+            # add tmp to encoded
+            encoded += tmp
+        
+        # encode the outputs
+        for v in range(len(self.inputs), len(instance)):
+            tmp = ''
+            # get value
+            value = instance[v]
+            # get attribute
+            attribute = self.outputs[v - len(self.inputs)]
+            # get number of values
+            num_values = int(lg(len(self.attributes[attribute])))
+            # get index of value in attribute
+            index = self.attributes[attribute].index(value)
+            # get the binary representation of the index
+            tmp = bin(index)[2:].zfill(num_values)
+            # add tmp to encoded
+            encoded += tmp
+
+        return encoded
+
+        
+
 
     def read_data(self, path):
         '''Reads data from a file'''
@@ -105,7 +148,13 @@ class Genetic:
         with open(path, 'r') as f:
             for line in f:
                     words = line.strip().split()
-                    data.append(words)
+                    encoded = self.encode_data(words)
+
+                    if self.debug:
+                        print('Words: ', words)
+                        print('Encoded: ', encoded)
+                        
+                    data.append(encoded)
                
         if self.debug:
             print('Read data: ', data)
@@ -244,16 +293,9 @@ class Genetic:
 
         # # print the best individual
         # print('Best Individual: ', self.best_individual)
+    
 
-
-    def test_accuracy(self, individual, data=None):
-        '''Tests an individual on a dataset'''
-        
-        data = data or self.training
-        # decode the individual
-        rules = self.decode(individual)
-        # evaluate the rules
-
+    # TODO: test this function
     def and_operator(self, ante1, ante2):
         '''AND operator for antecedents'''
 
@@ -264,7 +306,8 @@ class Genetic:
 
         return res
 
-    def eval_rule(self, rule, example):
+    # TODO: test this function 
+    def rule_classify(self, rule, example):
         '''Evaluates a rule on training example'''
 
         # get the rule antecedent
@@ -275,7 +318,67 @@ class Genetic:
         if self.and_operator(ante_r, ante_e) == ante_e:
             # get the rule consequent
             cons_r = rule[self.ante_length:]
-            cons_e = example[self.ante_length:] 
+            return cons_r
+        else:
+            return None
+
+    # TODO: test this function
+    def classify(self, individual, example, voting=True):
+        '''use an individual to classify the example using voting'''
+
+        if voting:
+            votes = {}
+            # split individual into rules
+            num_rules = len(individual) // self.rule_length
+            for r in range(num_rules):
+                # get the rule
+                rule = individual[r * self.rule_length: (r + 1) * self.rule_length]
+                # classify the example
+                res = self.rule_classify(rule, example)
+
+                if res is not None:
+                    if res in votes:
+                        votes[res] += 1
+                    else:
+                        votes[res] = 1
+                
+            # get the most voted class
+            most_voted = max(votes, key=votes.get)
+            if self.debug:
+                print('Votes: ', votes)
+                print('Most voted: ', most_voted)
+            
+            return most_voted
+
+        else:
+            # split individual into rules
+            num_rules = len(individual) // self.rule_length
+            for r in range(num_rules):
+                # get the rule
+                rule = individual[r * self.rule_length: (r + 1) * self.rule_length]
+                # classify the example
+                res = self.rule_classify(rule, example)
+
+                if res is not None:
+                    return res
+            
+            return None
+
+    def test_accuracy(self, individual, data=None):
+        '''Tests an individual on a dataset'''
+        
+        data = data or self.training
+        corrects, incorrects = 0, 0
+        for example in data:
+            # get the class of the example
+            class_example = example[-1]
+            # get the class of the individual
+            class_individual = self.classify(individual, example)
+            if class_individual == class_example:
+                corrects += 1
+            else:
+                incorrects += 1
+
             
     # TODO: implement to support continuous attributes
     def discretize(self, data):
