@@ -56,6 +56,10 @@ class Genetic:
         # getting the precondition length
         for attr in self.inputs:
             self.rule_length += len(self.attributes[attr])
+        
+        # save the precondition length
+        self.ante_length = self.rule_length
+
         # getting the postcondition length
         for attr in self.outputs:
             self.rule_length += int(lg(len(self.attributes[attr])))
@@ -71,8 +75,8 @@ class Genetic:
 
         # instanting params for the GA
         self.population = []
-        self.fitness = []
-        self.best_individual = None
+        self.fitnesses = []
+        self.best = None
 
         # generate the population
         self.generate_population()
@@ -242,12 +246,37 @@ class Genetic:
         # print('Best Individual: ', self.best_individual)
 
 
-    def test(self, individual, data=None):
+    def test_accuracy(self, individual, data=None):
         '''Tests an individual on a dataset'''
         
-        data = data or self.testing
+        data = data or self.training
+        # decode the individual
+        rules = self.decode(individual)
+        # evaluate the rules
 
+    def and_operator(self, ante1, ante2):
+        '''AND operator for antecedents'''
 
+        res = ""
+        for i in range(len(ante1)):
+            res += '1' if ante1[i] == '1' and \
+                 ante2[i] == '1' else '0'
+
+        return res
+
+    def eval_rule(self, rule, example):
+        '''Evaluates a rule on training example'''
+
+        # get the rule antecedent
+        ante_r = rule[:self.ante_length]
+        ante_e = example[:self.ante_length]
+
+        # check if example satisfies the rule
+        if self.and_operator(ante_r, ante_e) == ante_e:
+            # get the rule consequent
+            cons_r = rule[self.ante_length:]
+            cons_e = example[self.ante_length:] 
+            
     # TODO: implement to support continuous attributes
     def discretize(self, data):
         '''Discretizes the data'''
