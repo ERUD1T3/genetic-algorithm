@@ -7,7 +7,7 @@
 #############################################################
 
 from utils import lg
-from random import randint
+from random import randint, uniform, sample
 
 class Genetic:
     '''Main class for Genetic Algorithm'''
@@ -34,8 +34,8 @@ class Genetic:
         # self.testing = testing
         # self.attributes = attributes
         self.population_size = population
-        self.mutation = mutation
-        self.replacement = replacement
+        self.mutation_rate = mutation
+        self.replacement_rate = replacement
         self.max_generations = max_generations
         self.fitness_threshold = fitness_threshold
         self.selection_type = selection_type
@@ -81,15 +81,14 @@ class Genetic:
     def __repr__(self) -> str:
         '''Returns a string representation of the GA'''
         res = 'Genetic Algorithm\n'
-        res += '- Population: {}\n'.format(self.population)
-        res += '- Mutation: {}\n'.format(self.mutation)
-        res += '- Replacement: {}\n'.format(self.replacement)
+        res += '- Mutation: {}\n'.format(self.mutation_rate)
+        res += '- Replacement: {}\n'.format(self.replacement_rate)
         res += '- Max Generations: {}\n'.format(self.max_generations)
         res += '- Fitness Threshold: {}\n'.format(self.fitness_threshold)
         res += '- Selection Type: {}\n'.format(self.selection_type)
+        res += '- Population Size: {}\n'.format(self.population_size)
+        res += '- Population: {}\n'.format(self.population)
         
-        # might be useful to print the induviduals of the population
-
         return res
 
 
@@ -136,8 +135,7 @@ class Genetic:
 
                 else:
                     is_input = False
-
-                
+          
         if self.debug:
             print('Attributes: ', attributes)
             print('Inputs: ', inputs)
@@ -148,7 +146,6 @@ class Genetic:
 
         return attributes, inputs, outputs
 
-    # TODO: Test this function
     def generate_individual(self):
         '''Generates and return individual at random
         '''
@@ -161,7 +158,6 @@ class Genetic:
 
         return individual
 
-    # TODO: Test this function
     def generate_population(self):
         '''Generates a population of individuals'''
 
@@ -173,26 +169,48 @@ class Genetic:
             print('Population: ', self.population)
 
 
+    def crossover(self, parent1, parent2):
+        '''Crossover between two parents'''
+        pass
 
-    def encode(self, individual):
-        '''Encodes an individual
-            data instance -> binary encoded instance
+    def mutation(self):
+        '''Mutation of individuals at random
+            single bit mutation
         '''
-        encoded = ""
+        # choose population to mutate
+        num_mutants = int(self.mutation_rate * self.population_size)
+        # sample the population of mutants the index of the mutants
+        mutants = sample(range(self.population_size), num_mutants)
+        # mutate the population
+        for mutant in mutants:
+            # choose a random position to mutate
+            bit = randint(0, len(self.population[mutant]) - 1)
+            # flip the bit
+            self.population[mutant] = self.population[mutant][:bit] + \
+                str(1 - int(self.population[mutant][bit])) + \
+                self.population[mutant][bit + 1:]
 
-        for attr in self.inputs:
-            if individual[attr] == '1':
-                encoded += '1'
-            else:
-                encoded += '0'
+        # if self.debug:
+        #     print('Mutated Population: ', self.population)
 
+        
 
+    # TODO: implement binary decoding of rules
     def decode(self, individual):
         '''Decodes an individual'''
         pass
 
-    def discretize(self, data):
-        '''Discretizes the data'''
+    def evaluate_rules(self, test_data):
+        '''Evaluate the rules on test data'''
+        pass 
+
+    def fitness(self, individual):
+        '''Measures Fitness of an individual'''
+        pass
+
+    def selection(self, population, fitness):
+        '''Selection of parents based on the type 
+        of selection chosen'''
         pass
 
     def run(self):
@@ -222,27 +240,14 @@ class Genetic:
         # # print the best individual
         # print('Best Individual: ', self.best_individual)
 
-    def crossover(self, parent1, parent2):
-        '''Crossover between two parents'''
-        pass
-
-    def mutation(self, child):
-        '''Mutation of a child'''
-        pass
-
-
-    def selection(self, population, fitness):
-        '''Selection of parents based on the type 
-        of selection chosen'''
-        pass
-
-
-    def fitness(self, individual):
-        '''Measures Fitness of an individual'''
-        pass
-
 
     def test(self, individual, data=None):
         '''Tests an individual on a dataset'''
         
         data = data or self.testing
+
+
+    # TODO: implement to support continuous attributes
+    def discretize(self, data):
+        '''Discretizes the data'''
+        pass
