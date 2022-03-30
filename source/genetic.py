@@ -169,9 +169,11 @@ class Genetic:
             print('Population: ', self.population)
 
 
+    # TODO: implement crossover
     def crossover(self, parent1, parent2):
         '''Crossover between two parents'''
         pass
+
 
     def mutation(self):
         '''Mutation of individuals at random
@@ -194,7 +196,6 @@ class Genetic:
         #     print('Mutated Population: ', self.population)
 
         
-
     # TODO: implement binary decoding of rules
     def decode(self, individual):
         '''Decodes an individual'''
