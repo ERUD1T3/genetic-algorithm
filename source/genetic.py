@@ -6,6 +6,9 @@
 #   Description: : main genetic algorithm file
 #############################################################
 
+from utils import lg
+from random import randint
+
 class Genetic:
     '''Main class for Genetic Algorithm'''
 
@@ -47,6 +50,24 @@ class Genetic:
         #     print('Attributes: ', self.attributes)
         #     print('Order: ', self.order)
         #     print('Final Attribute: ', self.order[-1])
+
+        # determine single rule length
+        self.rule_length = 0
+        # getting the precondition length
+        for attr in self.inputs:
+            self.rule_length += len(self.attributes[attr])
+        # getting the postcondition length
+        for attr in self.outputs:
+            self.rule_length += int(lg(len(self.attributes[attr])))
+
+        # max number of rules (should not be greater than 
+        # number of examples present in the training set)
+        self.FACTOR = .5 # scaling factor to determine the max number of rules
+        self.ruleset_length = int(self.FACTOR * len(self.training))
+
+        if self.debug:
+            print('Rule Length: ', self.rule_length)
+            print('Rules Max Count: ', self.ruleset_length)
 
         # instanting params for the GA
         self.population = []
@@ -123,8 +144,24 @@ class Genetic:
         if len(attributes) == 0:
             raise Exception('No attributes found')
 
-
         return attributes, inputs, outputs
+
+    def generate_individual(self):
+        '''Generates and return individual at random
+        '''
+        # fixed length rules
+        # variable number of rules, but multiples of rule length
+
+        # generate a ruleset length fraction that is multiple of the rule length
+        ruleset_length_frac = self.ruleset_length // self.rule_length
+        # generate random length of individual
+        individual_len = randint(1, ruleset_length_frac) * self.rule_length
+        # generate random individual
+        individual = ""
+        for _ in range(individual_len):
+            individual += str(randint(0, 1))
+
+        return individual
 
     def encode(self, individual):
         '''Encodes an individual
