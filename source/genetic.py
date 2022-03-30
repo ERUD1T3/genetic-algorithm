@@ -150,10 +150,10 @@ class Genetic:
                     words = line.strip().split()
                     encoded = self.encode_data(words)
 
-                    if self.debug:
-                        print('Words: ', words)
-                        print('Encoded: ', encoded)
-                        
+                    # if self.debug:
+                    #     print('Words: ', words)
+                    #     print('Encoded: ', encoded)
+
                     data.append(encoded)
                
         if self.debug:
@@ -221,14 +221,7 @@ class Genetic:
         if self.debug:
             print('Population: ', self.population)
 
-
-    # TODO: implement crossover
-    def crossover(self, parent1, parent2):
-        '''Crossover between two parents'''
-        pass
-
-
-    def mutation(self):
+    def mutate(self):
         '''Mutation of individuals at random
             single bit mutation
         '''
@@ -247,53 +240,6 @@ class Genetic:
 
         # if self.debug:
         #     print('Mutated Population: ', self.population)
-
-        
-    # TODO: implement binary decoding of rules
-    def decode(self, individual):
-        '''Decodes an individual'''
-        pass
-
-    def evaluate_rules(self, test_data):
-        '''Evaluate the rules on test data'''
-        pass 
-
-    def fitness(self, individual):
-        '''Measures Fitness of an individual'''
-        pass
-
-    def selection(self, population, fitness):
-        '''Selection of parents based on the type 
-        of selection chosen'''
-        pass
-
-    def run(self):
-        '''Run the Genetic Algorithm'''
-        
-        # initialize the population
-        self.generate_population()
-
-        # # run the GA
-        # for _ in range(self.max_generations):
-        #     # evaluate the population
-        #     self.evaluate()
-        #     # select the best individual
-        #     self.select()
-        #     # crossover
-        #     self.crossover()
-        #     # mutate
-        #     self.mutate()
-        #     # replace the worst individuals
-        #     self.replace()
-
-        # # evaluate the population
-        # self.evaluate()
-        # # select the best individual
-        # self.select()
-
-        # # print the best individual
-        # print('Best Individual: ', self.best_individual)
-    
 
     # TODO: test this function
     def and_operator(self, ante1, ante2):
@@ -343,12 +289,14 @@ class Genetic:
                         votes[res] = 1
                 
             # get the most voted class
-            most_voted = max(votes, key=votes.get)
-            if self.debug:
-                print('Votes: ', votes)
-                print('Most voted: ', most_voted)
-            
-            return most_voted
+            if len(votes) > 0:
+                most_voted = max(votes, key=votes.get)
+                # if self.debug:
+                #     print('Votes: ', votes)
+                #     print('Most voted: ', most_voted)
+                return most_voted
+            else:
+                return None
 
         else:
             # split individual into rules
@@ -364,6 +312,7 @@ class Genetic:
             
             return None
 
+    # TODO: test this function
     def test_accuracy(self, individual, data=None):
         '''Tests an individual on a dataset'''
         
@@ -371,13 +320,85 @@ class Genetic:
         corrects, incorrects = 0, 0
         for example in data:
             # get the class of the example
-            class_example = example[-1]
+            class_example = example[self.ante_length:]
             # get the class of the individual
             class_individual = self.classify(individual, example)
             if class_individual == class_example:
                 corrects += 1
             else:
                 incorrects += 1
+
+        accuracy = corrects / len(data)
+        # if self.debug:
+        #     print('Corrects: ', corrects)
+        #     print('Incorrects: ', incorrects)
+        #     print('Accuracy: ', accuracy)
+        
+        return accuracy
+
+    def fitness(self, individual):
+        '''Measures Fitness of an individual'''
+            
+        # get the accuracy of the individual
+        accuracy = self.test_accuracy(individual)
+        # return the fitness
+        return accuracy ** 2
+
+    def evaluate(self):
+        '''Evaluates the population'''
+
+        # evaluate the population
+        if len(self.fitnesses) == 0:
+            for individual in self.population:
+                self.fitnesses.append(self.fitness(individual))
+        else:
+            for i in range(self.population_size):
+                self.fitnesses[i] = self.fitness(self.population[i])
+
+        if self.debug:
+            print('Fitnesses of Population: ', self.fitnesses)
+    
+    # TODO: implement binary decoding of rules
+    def decode(self, individual):
+        '''Decodes an individual'''
+        pass
+
+    def selection(self, population, fitness):
+        '''Selection of parents based on the type 
+        of selection chosen'''
+        pass
+
+        # TODO: implement crossover
+    def crossover(self, parent1, parent2):
+        '''Crossover between two parents'''
+        pass
+
+    def run(self):
+        '''Run the Genetic Algorithm'''
+        
+        # initialize the population
+        self.generate_population()
+
+        # # run the GA
+        # for _ in range(self.max_generations):
+        #     # evaluate the population
+        #     self.evaluate()
+        #     # select the best individual
+        #     self.select()
+        #     # crossover
+        #     self.crossover()
+        #     # mutate
+        #     self.mutate()
+        #     # replace the worst individuals
+        #     self.replace()
+
+        # # evaluate the population
+        # self.evaluate()
+        # # select the best individual
+        # self.select()
+
+        # # print the best individual
+        # print('Best Individual: ', self.best_individual)
 
             
     # TODO: implement to support continuous attributes

@@ -128,6 +128,11 @@ def main():
     # print genetic algorithm object
     print('\nGenetic Algorithm object created:')
     print(ga)
+
+    ga.generate_population()
+    # ga.evaluate()
+    # ga.mutate()
+    # ga.evaluate()
     
     # run the genetic algorithm
     # print('\nRunning the Genetic Algorithm...')
