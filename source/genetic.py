@@ -33,7 +33,7 @@ class Genetic:
         # self.training = training
         # self.testing = testing
         # self.attributes = attributes
-        self.population = population
+        self.population_size = population
         self.mutation = mutation
         self.replacement = replacement
         self.max_generations = max_generations
@@ -62,8 +62,8 @@ class Genetic:
 
         # max number of rules (should not be greater than 
         # number of examples present in the training set)
-        self.FACTOR = .5 # scaling factor to determine the max number of rules
-        self.ruleset_length = int(self.FACTOR * len(self.training))
+        self.FACTOR = 2 # scaling factor to determine the max number of rules
+        self.ruleset_length = len(self.training) // self.FACTOR
 
         if self.debug:
             print('Rule Length: ', self.rule_length)
@@ -73,6 +73,10 @@ class Genetic:
         self.population = []
         self.fitness = []
         self.best_individual = None
+
+        # generate the population
+        self.generate_population()
+
 
     def __repr__(self) -> str:
         '''Returns a string representation of the GA'''
@@ -89,7 +93,6 @@ class Genetic:
         return res
 
 
-    # TODO: test this function
     def read_data(self, path):
         '''Reads data from a file'''
         
@@ -109,7 +112,6 @@ class Genetic:
 
         return data
 
-     # TODO: test this function
     def read_attributes(self, path):
         '''Reads attributes from a file'''
         attributes = {}
@@ -146,22 +148,31 @@ class Genetic:
 
         return attributes, inputs, outputs
 
+    # TODO: Test this function
     def generate_individual(self):
         '''Generates and return individual at random
         '''
-        # fixed length rules
-        # variable number of rules, but multiples of rule length
-
-        # generate a ruleset length fraction that is multiple of the rule length
-        ruleset_length_frac = self.ruleset_length // self.rule_length
         # generate random length of individual
-        individual_len = randint(1, ruleset_length_frac) * self.rule_length
+        individual_len = randint(1, self.ruleset_length) * self.rule_length
         # generate random individual
         individual = ""
         for _ in range(individual_len):
             individual += str(randint(0, 1))
 
         return individual
+
+    # TODO: Test this function
+    def generate_population(self):
+        '''Generates a population of individuals'''
+
+        # generate a population of individuals
+        for _ in range(self.population_size):
+            self.population.append(self.generate_individual())
+
+        if self.debug:
+            print('Population: ', self.population)
+
+
 
     def encode(self, individual):
         '''Encodes an individual
@@ -186,7 +197,30 @@ class Genetic:
 
     def run(self):
         '''Run the Genetic Algorithm'''
-        pass
+        
+        # initialize the population
+        self.generate_population()
+
+        # # run the GA
+        # for _ in range(self.max_generations):
+        #     # evaluate the population
+        #     self.evaluate()
+        #     # select the best individual
+        #     self.select()
+        #     # crossover
+        #     self.crossover()
+        #     # mutate
+        #     self.mutate()
+        #     # replace the worst individuals
+        #     self.replace()
+
+        # # evaluate the population
+        # self.evaluate()
+        # # select the best individual
+        # self.select()
+
+        # # print the best individual
+        # print('Best Individual: ', self.best_individual)
 
     def crossover(self, parent1, parent2):
         '''Crossover between two parents'''
