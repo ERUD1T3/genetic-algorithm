@@ -554,10 +554,21 @@ class Genetic:
         # return the best individual
         return self.best
 
-    # TODO: implement binary decoding of rules
-    def decode(self, individual):
-        '''Decodes an individual'''
+    # TODO: implement
+    def decode_rule(self, rule)->str:
+        '''Decode the rule binary to readable format'''
         pass
+
+    # TODO: test
+    def print_individial(self, individual):
+        '''print an individual bit string'''
+        # get rules 
+        for r in range(0, len(individual), self.rule_length):
+            rule = individual[r:r + self.rule_length]
+            # decode the rule
+            rule = self.decode_rule(rule)
+            # print the rule
+            print(rule)
             
     # TODO: implement to support continuous attributes
     def discretize(self, data):
