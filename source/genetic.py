@@ -6,7 +6,6 @@
 #   Description: : main genetic algorithm file
 #############################################################
 
-from base64 import encode
 from utils import lg
 from random import randint, uniform, sample
 
@@ -95,6 +94,10 @@ class Genetic:
         res += '- Population: {}\n'.format(self.population)
         
         return res
+
+    def display_population(self):
+        '''Displays the population'''
+        print('Population: ', self.population)
 
     def encode_data(self, instance)->str:
         '''Encodes the instance'''
@@ -241,7 +244,7 @@ class Genetic:
         # if self.debug:
         #     print('Mutated Population: ', self.population)
 
-    # TODO: test this function
+    
     def and_operator(self, ante1, ante2):
         '''AND operator for antecedents'''
 
@@ -268,7 +271,7 @@ class Genetic:
         else:
             return None
 
-    # TODO: test this function
+    
     def classify(self, individual, example, voting=True):
         '''use an individual to classify the example using voting'''
 
@@ -312,7 +315,6 @@ class Genetic:
             
             return None
 
-    # TODO: test this function
     def test_accuracy(self, individual, data=None):
         '''Tests an individual on a dataset'''
         
@@ -419,8 +421,8 @@ class Genetic:
 
         return child1, child2
 
-    # TODO: complete implementation 
-    def cossover(self):
+    # TODO: complete implementation with probability 
+    def crossover(self):
         '''Crossover between parents to generate children'''
 
         # get number of individuals to crossover

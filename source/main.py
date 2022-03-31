@@ -130,9 +130,13 @@ def main():
     print(ga)
 
     ga.generate_population()
-    # ga.evaluate()
-    # ga.mutate()
-    # ga.evaluate()
+    ga.evaluate()
+    ga.mutate()
+    ga.evaluate()
+    ga.display_population()
+    ga.crossover()
+    ga.display_population()
+    ga.evaluate()
     
     # run the genetic algorithm
     # print('\nRunning the Genetic Algorithm...')
