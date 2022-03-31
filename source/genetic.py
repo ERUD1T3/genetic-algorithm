@@ -96,7 +96,7 @@ class Genetic:
         
         return res
 
-    def encode_data(self, instance: list[str])->str:
+    def encode_data(self, instance)->str:
         '''Encodes the instance'''
         encoded = ''
 
@@ -402,8 +402,8 @@ class Genetic:
             return cpt3, cpt4, d3, d4
 
 
-    # TODO: implement crossover
-    def crossover(self, parent1, parent2):
+    # TODO: test this function
+    def crossover_op(self, parent1, parent2):
         '''Crossover between two parents rules to generate
            two children of variable length'''
         
@@ -411,12 +411,13 @@ class Genetic:
         cpt1, cpt2, d1, d2 = self.generate_crossover_pts(parent1)
         cpt3, cpt4, _, _ = self.generate_crossover_pts(parent2, d1, d2)
 
-        # get the children
-        child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt1:cpt2] + parent2[cpt2:]
-        child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt3:cpt4] + parent1[cpt2:]
+        # get the children (check if the crossover points are valid)
+        child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt2:]
+        child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt4:]
+        # child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt1:cpt2] + parent2[cpt2:]
+        # child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt3:cpt4] + parent1[cpt2:]
 
         return child1, child2
-
 
     def selection(self, population, fitness):
         '''Selection of parents based on the type 
