@@ -22,7 +22,7 @@ class Genetic:
         mutation,
         replacement,
         max_generations,
-        fitness_threshold,
+        threshold,
         selection_type,
         debug
         ) -> None:
@@ -37,7 +37,7 @@ class Genetic:
         self.mutation_rate = mutation
         self.replace_rate = replacement
         self.max_generations = max_generations
-        self.fitness_threshold = fitness_threshold
+        self.threshold = threshold
         self.selection_type = selection_type
         self.debug = debug
 
@@ -74,10 +74,10 @@ class Genetic:
             print('Rules Max Count: ', self.ruleset_length)
 
         # instanting params for the GA
-        self.population = []
-        self.fitnesses = []
-        self.probs = []
-        self.best = None
+        self.population = [] # population
+        self.fitnesses = [] # fitnesses of individuals
+        self.probs = [] # probabilities of individuals
+        self.best = None # index of best individual
 
         # generate the population
         self.generate_population()
@@ -89,7 +89,7 @@ class Genetic:
         res += '- Mutation: {}\n'.format(self.mutation_rate)
         res += '- Replacement: {}\n'.format(self.replace_rate)
         res += '- Max Generations: {}\n'.format(self.max_generations)
-        res += '- Fitness Threshold: {}\n'.format(self.fitness_threshold)
+        res += '- Fitness Threshold: {}\n'.format(self.threshold)
         res += '- Selection Type: {}\n'.format(self.selection_type)
         res += '- Population Size: {}\n'.format(self.population_size)
         res += '- Population: {}\n'.format(self.population)
@@ -362,6 +362,11 @@ class Genetic:
             for i in range(self.population_size):
                 self.fitnesses[i] = self.fitness(self.population[i])
 
+        # save the best individual
+        self.best = self.population[
+            self.fitnesses.index(max(self.fitnesses))
+        ]
+
         if self.debug:
             print('Fitnesses of Population: ', self.fitnesses)
     
@@ -445,10 +450,10 @@ class Genetic:
             return self.probs
 
     # TODO: test this function
-    def crossover(self, population):
+    def crossover(self):
         '''Crossover between parents to generate children according to probability'''
         # get the population size
-        pop_size = len(population)
+        pop_size = len(self.population)
         # get number of individuals to crossover
         num_pairs = int(self.replace_rate * pop_size) // 2
         # get the probabilities
@@ -460,8 +465,8 @@ class Genetic:
         children = []
         for i in range(0, len(pairs), 2):
             *twins, = self.crossover_op(
-                population[pairs[i]], 
-                population[pairs[i + 1]]
+                self.population[pairs[i]], 
+                self.population[pairs[i + 1]]
             )
             children += twins
 
@@ -469,74 +474,41 @@ class Genetic:
         # self.population += children
         return children
 
-    # TODO: check 
+    # TODO: implement
     def tournament_selection(self):
-        '''Tournament selection of parents'''
-        # get the population size
-        pop_size = len(self.population)
-        # get the number of parents to select
-        num_parents = int(self.replace_rate * pop_size)
-        # get the parents
-        parents = []
-        for _ in range(num_parents):
-            # get the index of the parent
-            parent_index = randint(0, pop_size - 1)
-            # get the parent
-            parent = self.population[parent_index]
-            # add the parent to the parents
-            parents.append(parent)
+        '''Tournament selection of survivors'''
+        pass
 
-        return parents
-
-    # TODO: check
-    def rank_selection(self):
-        '''Rank selection of parents'''
-        # get the population size
-        pop_size = len(self.population)
-        # get the number of parents to select
-        num_parents = int(self.replace_rate * pop_size)
-        # get the parents
-        parents = []
-        for _ in range(num_parents):
-            # get the index of the parent
-            parent_index = randint(0, pop_size - 1)
-            # get the parent
-            parent = self.population[parent_index]
-            # add the parent to the parents
-            parents.append(parent)
-
-        return parents
-
-    # TODO: check
-    def fitness_proportionate_selection(self):
-        '''Fitness proportionate selection of parents'''
-        # get the population size
-        pop_size = len(self.population)
-        # get the number of parents to select
-        num_parents = int(self.replace_rate * pop_size)
-        # get the parents
-        parents = []
-        for _ in range(num_parents):
-            # get the index of the parent
-            parent_index = randint(0, pop_size - 1)
-            # get the parent
-            parent = self.population[parent_index]
-            # add the parent to the parents
-            parents.append(parent)
-
-        return parents
+    # TODO: implement
+    def rank_selection(self, population):
+        '''Rank selection of survivors'''
+        pass
 
     # TODO: test
-    def selection(self, population, fitnesses):
+    def proportional_selection(self, population):
+        '''Fitness proportional selection of parents'''
+       # get the population size
+        pop_size = len(population)
+        # get the number of survivors to select
+        k_survivors = int((1 - self.replace_rate) * pop_size)
+        # get probabilities
+        probs = self.get_probs()
+        # get the survivors 
+        survivors = choices(population, probs, k=k_survivors)
+        
+        return survivors
+
+    # TODO: test
+    def select(self):
         '''Selection of parents based on the type 
         of selection chosen'''
         
-        if self.selection_type == 'T':
-            return self.tournament_selection(population, fitnesses)
+        if self.selection_type == 'P':
+            return self.proportional_selection(self.population)
+        elif self.selection_type == 'T':
+            return self.tournament_selection(self.population)
         elif self.selection_type == 'R':
-            return self.rank_selection(population, fitnesses)
-        elif self.selection_type == 'FP':
-            return self.fitness_proportionate_selection(population, fitnesses)
+            return self.rank_selection(self.population)
         else:
             raise ValueError('Invalid Selection Type')
 
@@ -559,6 +531,12 @@ class Genetic:
         #     self.mutate()
         #     # replace the worst individuals
         #     self.replace()
+        #     
+        #     # print the best individual
+        #     print(self.population[self.best]
+        #     if self.threshold and \
+        #       self.fitnesses[self.best] >= self.threshold:
+        #         break
 
         # # evaluate the population
         # self.evaluate()

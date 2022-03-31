@@ -78,8 +78,8 @@ def parse_args():
         '-s', '--selection',
         type=str, 
         required=False,
-        default="FP",
-        help='selection strategy: FP for fitness-proportional, \
+        default="P",
+        help='selection strategy: P for fitness-proportional, \
              T for tournament, R rank (default: 0)',
     )
 
