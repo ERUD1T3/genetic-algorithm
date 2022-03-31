@@ -36,7 +36,7 @@ class Genetic:
         # self.attributes = attributes
         self.population_size = population
         self.mutation_rate = mutation
-        self.replacement_rate = replacement
+        self.replace_rate = replacement
         self.max_generations = max_generations
         self.fitness_threshold = fitness_threshold
         self.selection_type = selection_type
@@ -87,7 +87,7 @@ class Genetic:
         '''Returns a string representation of the GA'''
         res = 'Genetic Algorithm\n'
         res += '- Mutation: {}\n'.format(self.mutation_rate)
-        res += '- Replacement: {}\n'.format(self.replacement_rate)
+        res += '- Replacement: {}\n'.format(self.replace_rate)
         res += '- Max Generations: {}\n'.format(self.max_generations)
         res += '- Fitness Threshold: {}\n'.format(self.fitness_threshold)
         res += '- Selection Type: {}\n'.format(self.selection_type)
@@ -418,6 +418,27 @@ class Genetic:
         # child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt3:cpt4] + parent1[cpt2:]
 
         return child1, child2
+
+    # TODO: complete implementation 
+    def cossover(self):
+        '''Crossover between parents to generate children'''
+
+        # get number of individuals to crossover
+        num_pairs = int(self.replace_rate * self.population_size) // 2
+        # get the pairs of individuals to crossover
+        pairs = sample(range(self.population_size), num_pairs * 2)
+        # get the children
+        children = []
+        for i in range(0, len(pairs), 2):
+            *twins, = self.crossover_op(
+                self.population[pairs[i]], 
+                self.population[pairs[i + 1]]
+            )
+            children += twins
+
+        # add the children to the population
+        self.population += children
+
 
     def selection(self, population, fitness):
         '''Selection of parents based on the type 
