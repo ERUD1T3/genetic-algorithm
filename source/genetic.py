@@ -7,7 +7,7 @@
 #############################################################
 
 from utils import lg
-from random import randint, uniform, sample
+from random import randint, choices, sample
 
 class Genetic:
     '''Main class for Genetic Algorithm'''
@@ -76,6 +76,7 @@ class Genetic:
         # instanting params for the GA
         self.population = []
         self.fitnesses = []
+        self.probs = []
         self.best = None
 
         # generate the population
@@ -224,26 +225,30 @@ class Genetic:
         if self.debug:
             print('Population: ', self.population)
 
-    def mutate(self):
+    def mutate(self, population):
         '''Mutation of individuals at random
             single bit mutation
         '''
+        # get the population size
+        pop_size = len(population)
+
         # choose population to mutate
-        num_mutants = int(self.mutation_rate * self.population_size)
+        num_mutants = int(self.mutation_rate * pop_size)
         # sample the population of mutants the index of the mutants
-        mutants = sample(range(self.population_size), num_mutants)
+        mutants = sample(range(pop_size), num_mutants)
         # mutate the population
         for mutant in mutants:
             # choose a random position to mutate
-            bit = randint(0, len(self.population[mutant]) - 1)
+            bit = randint(0, len(population[mutant]) - 1)
             # flip the bit
-            self.population[mutant] = self.population[mutant][:bit] + \
-                str(1 - int(self.population[mutant][bit])) + \
-                self.population[mutant][bit + 1:]
+            population[mutant] = population[mutant][:bit] + \
+                str(1 - int(population[mutant][bit])) + \
+                population[mutant][bit + 1:]
 
         # if self.debug:
-        #     print('Mutated Population: ', self.population)
+        #     print('Mutated Population: ', population)
 
+        return population
     
     def and_operator(self, ante1, ante2):
         '''AND operator for antecedents'''
@@ -421,31 +426,119 @@ class Genetic:
 
         return child1, child2
 
-    # TODO: complete implementation with probability 
-    def crossover(self):
-        '''Crossover between parents to generate children'''
+    def get_probs(self):
+        '''Returns the probabilities of each individual'''
 
+        if len(self.fitnesses) == 0:
+            self.evaluate()
+
+        if len(self.probs) == 0:
+            # get the sum of fitnesses
+            sum_fitnesses = sum(self.fitnesses)
+            # get the probabilities
+            probs = [f / sum_fitnesses for f in self.fitnesses]
+            
+            self.probs = probs
+
+            return probs
+        else:
+            return self.probs
+
+    # TODO: test this function
+    def crossover(self, population):
+        '''Crossover between parents to generate children according to probability'''
+        # get the population size
+        pop_size = len(population)
         # get number of individuals to crossover
-        num_pairs = int(self.replace_rate * self.population_size) // 2
+        num_pairs = int(self.replace_rate * pop_size) // 2
+        # get the probabilities
+        probs = self.get_probs()
         # get the pairs of individuals to crossover
-        pairs = sample(range(self.population_size), num_pairs * 2)
+        pairs = choices(range(pop_size), probs, k= (num_pairs * 2))
+        # pairs = sample(range(pop_size), num_pairs * 2)
         # get the children
         children = []
         for i in range(0, len(pairs), 2):
             *twins, = self.crossover_op(
-                self.population[pairs[i]], 
-                self.population[pairs[i + 1]]
+                population[pairs[i]], 
+                population[pairs[i + 1]]
             )
             children += twins
 
         # add the children to the population
-        self.population += children
+        # self.population += children
+        return children
 
+    # TODO: check 
+    def tournament_selection(self):
+        '''Tournament selection of parents'''
+        # get the population size
+        pop_size = len(self.population)
+        # get the number of parents to select
+        num_parents = int(self.replace_rate * pop_size)
+        # get the parents
+        parents = []
+        for _ in range(num_parents):
+            # get the index of the parent
+            parent_index = randint(0, pop_size - 1)
+            # get the parent
+            parent = self.population[parent_index]
+            # add the parent to the parents
+            parents.append(parent)
 
-    def selection(self, population, fitness):
+        return parents
+
+    # TODO: check
+    def rank_selection(self):
+        '''Rank selection of parents'''
+        # get the population size
+        pop_size = len(self.population)
+        # get the number of parents to select
+        num_parents = int(self.replace_rate * pop_size)
+        # get the parents
+        parents = []
+        for _ in range(num_parents):
+            # get the index of the parent
+            parent_index = randint(0, pop_size - 1)
+            # get the parent
+            parent = self.population[parent_index]
+            # add the parent to the parents
+            parents.append(parent)
+
+        return parents
+
+    # TODO: check
+    def fitness_proportionate_selection(self):
+        '''Fitness proportionate selection of parents'''
+        # get the population size
+        pop_size = len(self.population)
+        # get the number of parents to select
+        num_parents = int(self.replace_rate * pop_size)
+        # get the parents
+        parents = []
+        for _ in range(num_parents):
+            # get the index of the parent
+            parent_index = randint(0, pop_size - 1)
+            # get the parent
+            parent = self.population[parent_index]
+            # add the parent to the parents
+            parents.append(parent)
+
+        return parents
+
+    # TODO: test
+    def selection(self, population, fitnesses):
         '''Selection of parents based on the type 
         of selection chosen'''
-        pass
+        
+        if self.selection_type == 'T':
+            return self.tournament_selection(population, fitnesses)
+        elif self.selection_type == 'R':
+            return self.rank_selection(population, fitnesses)
+        elif self.selection_type == 'FP':
+            return self.fitness_proportionate_selection(population, fitnesses)
+        else:
+            raise ValueError('Invalid Selection Type')
 
 
     def run(self):
