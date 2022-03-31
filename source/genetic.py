@@ -358,20 +358,71 @@ class Genetic:
         if self.debug:
             print('Fitnesses of Population: ', self.fitnesses)
     
-    # TODO: implement binary decoding of rules
-    def decode(self, individual):
-        '''Decodes an individual'''
-        pass
+    
+    # TODO: test this function
+    def generate_crossover_pts(self, parent, d1=None, d2=None):
+        '''Generates crossover points
+            CAN BE IMPROVED FOR EFFICIENCY
+        '''
+
+        # get the length of the parent
+        upper_bound = len(parent) - 1
+        # get the crossover points
+        if d1 is None and d2 is None:
+            cpt1 = randint(0, upper_bound)
+            cpt2 = randint(0, upper_bound)
+            while cpt2 == cpt1:
+                cpt2 = randint(0, upper_bound)
+
+            # get distances d1 and d2
+            leftmost = min(cpt1, cpt2)
+            rightmost = max(cpt1, cpt2)
+            d1 = leftmost % self.rule_length
+            d2 = rightmost % self.rule_length
+
+            return cpt1, cpt2, d1, d2
+        # get the crossover points matching d1 and d2
+        else:
+            d3, d4 = None, None
+            while (d3 is None and d4 is None) or \
+                (d3 != d1 or d4 != d2):
+                # get first random crossover points in parent2
+                cpt3 = randint(0, upper_bound)
+                # get second random crossover points in parent2
+                cpt4 = randint(0, upper_bound)
+                while cpt4 == cpt3:
+                    cpt4 = randint(0, upper_bound)
+
+                # get distance d3 and d4
+                leftmost = min(cpt3, cpt4)
+                rightmost = max(cpt3, cpt4)
+                d3 = leftmost % self.rule_length
+                d4 = rightmost % self.rule_length
+
+            return cpt3, cpt4, d3, d4
+
+
+    # TODO: implement crossover
+    def crossover(self, parent1, parent2):
+        '''Crossover between two parents rules to generate
+           two children of variable length'''
+        
+        # get the crossover points of the parents
+        cpt1, cpt2, d1, d2 = self.generate_crossover_pts(parent1)
+        cpt3, cpt4, _, _ = self.generate_crossover_pts(parent2, d1, d2)
+
+        # get the children
+        child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt1:cpt2] + parent2[cpt2:]
+        child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt3:cpt4] + parent1[cpt2:]
+
+        return child1, child2
+
 
     def selection(self, population, fitness):
         '''Selection of parents based on the type 
         of selection chosen'''
         pass
 
-        # TODO: implement crossover
-    def crossover(self, parent1, parent2):
-        '''Crossover between two parents'''
-        pass
 
     def run(self):
         '''Run the Genetic Algorithm'''
@@ -400,6 +451,10 @@ class Genetic:
         # # print the best individual
         # print('Best Individual: ', self.best_individual)
 
+    # TODO: implement binary decoding of rules
+    def decode(self, individual):
+        '''Decodes an individual'''
+        pass
             
     # TODO: implement to support continuous attributes
     def discretize(self, data):
