@@ -77,7 +77,7 @@ class Genetic:
         self.population = [] # population
         self.fitnesses = [] # fitnesses of individuals
         self.probs = [] # probabilities of individuals
-        self.best = None # index of best individual
+        self.best = None # index, value, fitness of best individual
 
         # generate the population
         self.generate_population()
@@ -362,13 +362,17 @@ class Genetic:
             for i in range(self.population_size):
                 self.fitnesses[i] = self.fitness(self.population[i])
 
-        # save the best individual
-        self.best = self.population[
-            self.fitnesses.index(max(self.fitnesses))
-        ]
+        # save the index, value, and fitness of best individual
+        best_fitness = max(self.fitnesses)
+        if self.best is None or best_fitness > self.best[2]:
+            best_index = self.fitnesses.index(best_fitness)
+            self.best = (best_index, self.population[best_index], best_fitness)
 
         if self.debug:
             print('Fitnesses of Population: ', self.fitnesses)
+            print('Best Individual: ', self.best)
+
+        return self.best
     
     
     # TODO: test this function
@@ -519,32 +523,36 @@ class Genetic:
         # initialize the population
         self.generate_population()
 
-        # # run the GA
-        # for _ in range(self.max_generations):
-        #     # evaluate the population
-        #     self.evaluate()
-        #     # select the best individual
-        #     self.select()
-        #     # crossover
-        #     self.crossover()
-        #     # mutate
-        #     self.mutate()
-        #     # replace the worst individuals
-        #     self.replace()
-        #     
-        #     # print the best individual
-        #     print(self.population[self.best]
-        #     if self.threshold and \
-        #       self.fitnesses[self.best] >= self.threshold:
-        #         break
+        # evaluate the population
+        self.evaluate()
 
-        # # evaluate the population
-        # self.evaluate()
-        # # select the best individual
-        # self.select()
+        # print the best individual
+        # print('Best Individual: ', self.best)
 
-        # # print the best individual
-        # print('Best Individual: ', self.best_individual)
+        for _ in range(self.max_generations):
+            new_population = []
+
+            # get the survivors
+            survivors = self.select()
+            new_population += survivors
+            # crossover
+            children = self.crossover()
+            new_population += children
+            # mutate
+            self.mutate(new_population)
+            # update
+            self.population = new_population
+            # evaluate
+            self.evaluate()
+
+            # stop early if threshold is reached
+            if self.best[2] >= self.threshold:
+                break
+    
+        # print the best individual
+        print('Best Individual: ', self.best)
+        # return the best individual
+        return self.best
 
     # TODO: implement binary decoding of rules
     def decode(self, individual):
