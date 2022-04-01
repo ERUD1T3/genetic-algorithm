@@ -369,9 +369,9 @@ class Genetic:
             best_index = self.fitnesses.index(best_fitness)
             self.best = (best_index, self.population[best_index], best_fitness)
 
-        if self.debug:
-            print('Fitnesses of Population: ', self.fitnesses)
-            print('Best Individual: ', self.best)
+        # if self.debug:
+        #     print('Fitnesses of Population: ', self.fitnesses)
+        print('Best Individual: ', self.best)
 
         return self.best
     
@@ -395,40 +395,70 @@ class Genetic:
             # get distances d1 and d2
             d1 = leftmost % self.rule_length
             d2 = rightmost % self.rule_length
-            
+            # return the crossover points and distances
+            return leftmost, rightmost, d1, d2
         # get the crossover points matching d1 and d2
         else:
             # get candidate crossover points
             cpt3_candidates = [i for i in range(0, len(parent)) 
                 if i % self.rule_length == d1]
+            if len(cpt3_candidates) == 0:
+                raise Exception('Invalid crossover')
             cpt3 = choice(cpt3_candidates)
             cpt4_candidates = [i for i in range(0, len(parent))
                 if i % self.rule_length == d2 and i != cpt3]
+            if len(cpt4_candidates) == 0:
+                raise Exception('Invalid crossover')
             # get first random crossover points in parents
             cpt4 = choice(cpt4_candidates)
             # get leftmost and rightmost crossover points
             leftmost = min(cpt3, cpt4)
             rightmost = max(cpt3, cpt4)
+            # return the crossover points and distances
+            return leftmost, rightmost, d1, d2
 
-        return leftmost, rightmost, d1, d2
+    def is_valid(self, individual):
+        '''Checks if an individual is valid'''
 
+        # get the length of the individual
+        length = len(individual)
+        # get the number of rules
+        num_rules = length // self.rule_length
+        # check if the individual is valid
+        if length % self.rule_length != 0:
+            return False
+        elif num_rules < 1 or num_rules > self.ruleset_length:
+            return False
+        else:
+            return True
 
     # TODO: test this function
     def crossover_op(self, parent1, parent2):
         '''Crossover between two parents rules to generate
            two children of variable length'''
+       
+        while True:
+            try: # try to generate two valid children
+                # get the crossover points of the parents
+                cpt1, cpt2, d1, d2 = self.generate_crossover_pts(parent1)
+                cpt3, cpt4, _, _ = self.generate_crossover_pts(parent2, d1, d2)
+
+                # get the children (check if the crossover points are valid)
+                child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt2:]
+                child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt4:]
+                # child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt1:cpt2] + parent2[cpt2:]
+                # child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt3:cpt4] + parent1[cpt2:]
+
+                # check if the children are valid
+                if self.is_valid(child1) and self.is_valid(child2):
+                    return child1, child2
+                else:
+                    raise Exception('Invalid crossover')
+
+            except Exception as e:
+                if e == 'Invalid crossover':
+                    continue
         
-        # get the crossover points of the parents
-        cpt1, cpt2, d1, d2 = self.generate_crossover_pts(parent1)
-        cpt3, cpt4, _, _ = self.generate_crossover_pts(parent2, d1, d2)
-
-        # get the children (check if the crossover points are valid)
-        child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt2:]
-        child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt4:]
-        # child1 = parent1[:cpt1] + parent2[cpt3:cpt4] + parent1[cpt1:cpt2] + parent2[cpt2:]
-        # child2 = parent2[:cpt3] + parent1[cpt1:cpt2] + parent2[cpt3:cpt4] + parent1[cpt2:]
-
-        return child1, child2
 
     def get_probs(self):
         '''Returns the probabilities of each individual'''
@@ -539,9 +569,9 @@ class Genetic:
             self.mutate(new_population)
             # update
             # check they are same size
-            if self.debug:
-                print('new size: ', len(new_population))
-                print('old size: ', len(self.population))
+            # if self.debug:
+            #     print('new size: ', len(new_population))
+            #     print('old size: ', len(self.population))
             if len(new_population) != len(self.population):
                 raise ValueError('Population size mismatch')
             self.population = new_population
@@ -554,7 +584,7 @@ class Genetic:
                 break
     
         # print the best individual
-        print('Best Individual: ', self.best)
+        print('Final Best Individual: ', self.best)
         self.print_individial(self.best[1])
         # return the best individual
         return self.best
@@ -568,8 +598,8 @@ class Genetic:
             num_values = len(self.attributes[attr])
             # get the value substring
             value = rule[:num_values]
-            if self.debug:
-                print(f'here {attr}: {value}')
+            # if self.debug:
+            #     print(f'here {attr}: {value}')
             # check if value is 0s
             if value != '0' * num_values:
                 res += f'{attr} = ('
@@ -614,7 +644,7 @@ class Genetic:
         '''print an individual bit string'''
         # get rules 
         for r in range(0, len(individual), self.rule_length):
-            rule = individual[r:r + self.rule_length]
+            rule = individual[r : r + self.rule_length]
             # decode the rule
             rule = self.decode_rule(rule)
             # print the rule
