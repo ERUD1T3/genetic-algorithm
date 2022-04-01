@@ -6,6 +6,7 @@
 #   Description: : main genetic algorithm file
 #############################################################
 
+from distutils.log import debug
 from utils import lg
 from random import randint, choices, sample
 
@@ -564,20 +565,27 @@ class Genetic:
             num_values = len(self.attributes[attr])
             # get the value substring
             value = rule[:num_values]
-            res += f'{attr} = ('
-            # get the attribute value
-            for i in range(num_values):
-                if value[i] == '1':
-                    res += f'{self.attributes[attr][i]} v '
-            # remove the last 'v '
-            res = res[:-3]
-            res += ') ^ '
+
+            if self.debug:
+                print(f'{attr}: {value}')
+
+            # check if value is 0s
+            if value != '0' * num_values:
+                res += f'{attr} = ('
+                # get the attribute value
+                for i in range(num_values):
+                    if value[i] == '1':
+                        res += f'{self.attributes[attr][i]} v '
+                # remove the last 'v '
+                res = res[:-3]
+                res += ') ^ '
+                
             # get rest of the rule
             rule = rule[num_values:]
 
         # remove the last '^ '
-        res = res[:-3]
-        res += '=> '
+        if res != '': res = res[:-3]
+        res += ' => '
 
         # get the output value
         for attr in self.outputs:
@@ -585,6 +593,10 @@ class Genetic:
             num_values = int(lg(len(self.attributes[attr])))
             # get the value substring
             value = rule[:num_values]
+
+            if self.debug:
+                print(f'{attr}: {value}')
+
             res += f'{attr} = ('
             # convert the value to decimal
             index = int('0b'+ value, 2)
@@ -600,9 +612,6 @@ class Genetic:
 
         return res
 
-            
-
-
     # TODO: test
     def print_individial(self, individual):
         '''print an individual bit string'''
@@ -612,7 +621,7 @@ class Genetic:
             # decode the rule
             rule = self.decode_rule(rule)
             # print the rule
-            print(rule)
+            print(rule, end='')
             
     # TODO: implement to support continuous attributes
     def discretize(self, data):

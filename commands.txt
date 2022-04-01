@@ -7,7 +7,7 @@ python source/main.py \
 -r .5 \
 -g 100 \
 -f .9 \
--s FP \
+-s P \
 --debug
 
 python source/main.py \
@@ -19,5 +19,5 @@ python source/main.py \
 -r .6 \
 -g 100 \
 -f .9 \
--s FP \
+-s P \
 --debug
