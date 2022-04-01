@@ -516,16 +516,14 @@ class Genetic:
         
         # initialize the population
         self.generate_population()
-
         # evaluate the population
         self.evaluate()
-
         # print the best individual
         # print('Best Individual: ', self.best)
-
-        for _ in range(self.max_generations):
+        for g in range(self.max_generations):
+            if self.debug:
+                print('Generation: ', g)
             new_population = []
-
             # get the survivors
             survivors = self.select()
             new_population += survivors
@@ -538,9 +536,10 @@ class Genetic:
             self.population = new_population
             # evaluate
             self.evaluate()
-
             # stop early if threshold is reached
             if self.best[2] >= self.threshold:
+                if self.debug:
+                    print('Threshold Reached')
                 break
     
         # print the best individual
@@ -609,6 +608,16 @@ class Genetic:
             rule = self.decode_rule(rule)
             # print the rule
             print(rule, end='')
+
+    def test(self, data):
+        '''Test the algorithm by testing best individual'''
+        # get the best individual
+        if self.best is None:
+            self.run()
+        # get accuracy of the best individual
+        accuracy = self.test_accuracy(self.best[1], data)
+        # print the accuracy
+        print(f'Accuracy: {accuracy * 100}%')
             
     # TODO: implement to support continuous attributes
     def discretize(self, data):
