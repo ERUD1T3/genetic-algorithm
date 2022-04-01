@@ -7,8 +7,9 @@
 #############################################################
 
 from distutils.log import debug
+from turtle import right
 from utils import lg
-from random import randint, choices, sample
+from random import randint, choice, choices, sample
 
 class Genetic:
     '''Main class for Genetic Algorithm'''
@@ -375,7 +376,7 @@ class Genetic:
         return self.best
     
     
-    # TODO: test this function
+    # TODO: fix bug where goes into infinite loop
     def generate_crossover_pts(self, parent, d1=None, d2=None):
         '''Generates crossover points
             CAN BE IMPROVED FOR EFFICIENCY
@@ -383,38 +384,33 @@ class Genetic:
         # get the length of the parent
         upper_bound = len(parent) - 1
         # get the crossover points
-        if d1 is None and d2 is None:
+        if d1 is None or d2 is None:
+            # get candidate crossover points
             cpt1 = randint(0, upper_bound)
             cpt2 = randint(0, upper_bound)
-            while cpt2 == cpt1:
-                cpt2 = randint(0, upper_bound)
-
-            # get distances d1 and d2
+            while cpt2 == cpt1: cpt2 = randint(0, upper_bound)
+            # leftmost and rightmost crossover points
             leftmost = min(cpt1, cpt2)
             rightmost = max(cpt1, cpt2)
+            # get distances d1 and d2
             d1 = leftmost % self.rule_length
             d2 = rightmost % self.rule_length
-
-            return cpt1, cpt2, d1, d2
+            
         # get the crossover points matching d1 and d2
         else:
-            d3, d4 = None, None
-            while (d3 is None and d4 is None) or \
-                (d3 != d1 or d4 != d2):
-                # get first random crossover points in parent2
-                cpt3 = randint(0, upper_bound)
-                # get second random crossover points in parent2
-                cpt4 = randint(0, upper_bound)
-                while cpt4 == cpt3:
-                    cpt4 = randint(0, upper_bound)
+            # get candidate crossover points
+            cpt3_candidates = [i for i in range(0, len(parent)) 
+                if i % self.rule_length == d1]
+            cpt3 = choice(cpt3_candidates)
+            cpt4_candidates = [i for i in range(0, len(parent))
+                if i % self.rule_length == d2 and i != cpt3]
+            # get first random crossover points in parents
+            cpt4 = choice(cpt4_candidates)
+            # get leftmost and rightmost crossover points
+            leftmost = min(cpt3, cpt4)
+            rightmost = max(cpt3, cpt4)
 
-                # get distance d3 and d4
-                leftmost = min(cpt3, cpt4)
-                rightmost = max(cpt3, cpt4)
-                d3 = leftmost % self.rule_length
-                d4 = rightmost % self.rule_length
-
-            return cpt3, cpt4, d3, d4
+        return leftmost, rightmost, d1, d2
 
 
     # TODO: test this function
@@ -452,7 +448,6 @@ class Genetic:
         else:
             return self.probs
 
-    # TODO: test this function
     def crossover(self):
         '''Crossover between parents to generate children according to probability'''
         # get the population size
@@ -489,7 +484,6 @@ class Genetic:
         '''Rank selection of survivors'''
         pass
 
-    # TODO: test
     def proportional_selection(self, population):
         '''Fitness proportional selection of parents'''
        # get the population size
@@ -509,7 +503,6 @@ class Genetic:
         
         return survivors
 
-    # TODO: test
     def select(self):
         '''Selection of parents based on the type 
         of selection chosen'''
@@ -522,8 +515,7 @@ class Genetic:
             return self.rank_selection(self.population)
         else:
             raise ValueError('Invalid Selection Type')
-
-    # TODO: test    
+  
     def run(self):
         '''Run the Genetic Algorithm'''
         
@@ -638,6 +630,8 @@ class Genetic:
         # print the accuracy
         print(f'Accuracy: {accuracy * 100}%')
             
+
+    
     # TODO: implement to support continuous attributes
     def discretize(self, data):
         '''Discretizes the data'''
