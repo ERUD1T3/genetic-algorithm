@@ -67,7 +67,7 @@ class Genetic:
 
         # max number of rules (should not be greater than 
         # number of examples present in the training set)
-        self.FACTOR = .6 # scaling factor to determine the max number of rules
+        self.FACTOR = .5 # scaling factor to determine the max number of rules
         self.ruleset_length = round(len(self.training) * self.FACTOR)
 
         if self.debug:
@@ -578,6 +578,8 @@ class Genetic:
             self.population = new_population
             # evaluate
             self.evaluate()
+            # keep the best individual
+            # self.keep_best_individual()
             # stop early if threshold is reached
             if self.best[2] >= self.threshold:
                 if self.debug:
@@ -661,7 +663,24 @@ class Genetic:
         # print the accuracy
         print(f'Accuracy: {accuracy * 100}%')
             
-
+    def keep_best_individual(self):
+        '''put the best back they were removed'''
+        # check if best is present in population
+        found = False
+        for individual in self.population:
+            if self.best is not None and \
+                self.best[1] == individual:
+                found = True
+                break
+        # if not found, add it
+        if not found:
+            # look for the worst individual based on
+            # the fitness
+            index_worst = self.fitnesses.index(min(self.fitnesses))
+            # swap the best with the worst
+            self.population[index_worst] = self.best[1]
+            # self.population[0] = self.best[1]
+            # maybe should swap with worse??
     
     # TODO: implement to support continuous attributes
     def discretize(self, data):
