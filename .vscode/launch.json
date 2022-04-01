@@ -13,7 +13,7 @@
                 "-a", "${workspaceFolder}\\data\\tennis\\tennis-attr.txt",  
                 "-d", "${workspaceFolder}\\data\\tennis\\tennis-train.txt", 
                 "-t", "${workspaceFolder}\\data\\tennis\\tennis-test.txt",
-                "-p", "10", "-m", "1e-3", "-r", ".6", "-g", "5", 
+                "-p", "10", "-m", "1e-3", "-r", ".6", "-g", "100", 
                 "-f",  ".9", "-s", "P", "--debug"
             ],
             "console": "integratedTerminal",
