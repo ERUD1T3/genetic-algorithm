@@ -343,8 +343,12 @@ class Genetic:
             
         # get the accuracy of the individual
         accuracy = self.test_accuracy(individual)
+        # get length of individual
+        length = len(individual)
+        # get the fitness
+        fitness = accuracy ** 2 / length
         # return the fitness
-        return accuracy ** 2
+        return fitness
 
     def evaluate(self):
         '''Evaluates the population'''
@@ -495,10 +499,10 @@ class Genetic:
         # get probabilities
         probs = self.get_probs()
 
-        if self.debug:
-            print('num of probs: ', len(probs))
-            print('num of survivors: ', size)
-            print('stored size: ', len(self.population))
+        # if self.debug:
+        #     print('num of probs: ', len(probs))
+        #     print('num of survivors: ', size)
+        #     print('stored size: ', len(self.population))
 
         # get the survivors 
         survivors = choices(population, probs, k=k_survivors)
