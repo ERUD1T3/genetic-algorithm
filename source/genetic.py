@@ -67,8 +67,8 @@ class Genetic:
 
         # max number of rules (should not be greater than 
         # number of examples present in the training set)
-        self.FACTOR = 2 # scaling factor to determine the max number of rules
-        self.ruleset_length = len(self.training) // self.FACTOR
+        self.FACTOR = .6 # scaling factor to determine the max number of rules
+        self.ruleset_length = round(len(self.training) * self.FACTOR)
 
         if self.debug:
             print('Rule Length: ', self.rule_length)
@@ -347,7 +347,8 @@ class Genetic:
         # get length of individual
         length = len(individual)
         # get the fitness
-        fitness = accuracy ** 2 / length
+        fitness = accuracy ** 2 / length ** .5
+        # fitness = accuracy ** 2
         # return the fitness
         return fitness
 
