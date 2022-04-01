@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Genetic Algorithm",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\source\\main.py",
+            "args": [
+                "-a", "${workspaceFolder}\\data\\tennis\\tennis-attr.txt",  
+                "-d", "${workspaceFolder}\\data\\tennis\\tennis-train.txt", 
+                "-t", "${workspaceFolder}\\data\\tennis\\tennis-test.txt",
+                "-p", "10", "-m", "1e-3", "-r", ".6", "-g", "5", 
+                "-f",  ".9", "-s", "P", "--debug"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

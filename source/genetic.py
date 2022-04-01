@@ -559,7 +559,7 @@ class Genetic:
     
         # print the best individual
         print('Best Individual: ', self.best)
-        self.print_individial(self.best)
+        self.print_individial(self.best[1])
         # return the best individual
         return self.best
 
@@ -573,7 +573,7 @@ class Genetic:
             # get the value substring
             value = rule[:num_values]
             if self.debug:
-                print(f'{attr}: {value}')
+                print(f'here {attr}: {value}')
             # check if value is 0s
             if value != '0' * num_values:
                 res += f'{attr} = ('
