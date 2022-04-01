@@ -18,7 +18,7 @@ class Genetic:
         training, 
         testing,
         attributes,
-        population,
+        size,
         mutation,
         replacement,
         max_generations,
@@ -33,7 +33,7 @@ class Genetic:
         # self.training = training
         # self.testing = testing
         # self.attributes = attributes
-        self.population_size = population
+        # self.population_size = population
         self.mutation_rate = mutation
         self.replace_rate = replacement
         self.max_generations = max_generations
@@ -62,7 +62,7 @@ class Genetic:
 
         # getting the postcondition length
         for attr in self.outputs:
-            self.rule_length += int(lg(len(self.attributes[attr])))
+            self.rule_length += round(lg(len(self.attributes[attr])))
 
         # max number of rules (should not be greater than 
         # number of examples present in the training set)
@@ -80,7 +80,7 @@ class Genetic:
         self.best = None # index, value, fitness of best individual
 
         # generate the population
-        self.generate_population()
+        self.generate_population(size)
 
 
     def __repr__(self) -> str:
@@ -91,7 +91,7 @@ class Genetic:
         res += '- Max Generations: {}\n'.format(self.max_generations)
         res += '- Fitness Threshold: {}\n'.format(self.threshold)
         res += '- Selection Type: {}\n'.format(self.selection_type)
-        res += '- Population Size: {}\n'.format(self.population_size)
+        res += '- Population Size: {}\n'.format(len(self.population))
         res += '- Population: {}\n'.format(self.population)
         
         return res
@@ -130,7 +130,7 @@ class Genetic:
             # get attribute
             attribute = self.outputs[v - len(self.inputs)]
             # get number of values
-            num_values = int(lg(len(self.attributes[attribute])))
+            num_values = round(lg(len(self.attributes[attribute])))
             # get index of value in attribute
             index = self.attributes[attribute].index(value)
             # get the binary representation of the index
@@ -212,11 +212,11 @@ class Genetic:
 
         return individual
 
-    def generate_population(self):
+    def generate_population(self, size):
         '''Generates a population of individuals'''
 
         # generate a population of individuals
-        for _ in range(self.population_size):
+        for _ in range(size):
             self.population.append(self.generate_individual())
 
         if self.debug:
@@ -230,7 +230,7 @@ class Genetic:
         pop_size = len(population)
 
         # choose population to mutate
-        num_mutants = int(self.mutation_rate * pop_size)
+        num_mutants = round(self.mutation_rate * pop_size)
         # sample the population of mutants the index of the mutants
         mutants = sample(range(pop_size), num_mutants)
         # mutate the population
@@ -354,7 +354,8 @@ class Genetic:
             for individual in self.population:
                 self.fitnesses.append(self.fitness(individual))
         else:
-            for i in range(self.population_size):
+            size = len(self.population)
+            for i in range(size):
                 self.fitnesses[i] = self.fitness(self.population[i])
 
         # save the index, value, and fitness of best individual
@@ -453,7 +454,9 @@ class Genetic:
         # get the population size
         pop_size = len(self.population)
         # get number of individuals to crossover
-        num_pairs = int(self.replace_rate * pop_size) // 2
+        
+        num_pairs = round(self.replace_rate * pop_size) // 2
+        
         # get the probabilities
         probs = self.get_probs()
         # get the pairs of individuals to crossover
@@ -486,11 +489,17 @@ class Genetic:
     def proportional_selection(self, population):
         '''Fitness proportional selection of parents'''
        # get the population size
-        pop_size = len(population)
+        size = len(population)
         # get the number of survivors to select
-        k_survivors = int((1 - self.replace_rate) * pop_size)
+        k_survivors = round((1 - self.replace_rate) * size)
         # get probabilities
         probs = self.get_probs()
+
+        if self.debug:
+            print('num of probs: ', len(probs))
+            print('num of survivors: ', size)
+            print('stored size: ', len(self.population))
+
         # get the survivors 
         survivors = choices(population, probs, k=k_survivors)
         
@@ -515,7 +524,7 @@ class Genetic:
         '''Run the Genetic Algorithm'''
         
         # initialize the population
-        self.generate_population()
+        # self.generate_population(self.size )
         # evaluate the population
         self.evaluate()
         # print the best individual
@@ -533,6 +542,12 @@ class Genetic:
             # mutate
             self.mutate(new_population)
             # update
+            # check they are same size
+            if self.debug:
+                print('new size: ', len(new_population))
+                print('old size: ', len(self.population))
+            if len(new_population) != len(self.population):
+                raise ValueError('Population size mismatch')
             self.population = new_population
             # evaluate
             self.evaluate()
@@ -557,8 +572,8 @@ class Genetic:
             num_values = len(self.attributes[attr])
             # get the value substring
             value = rule[:num_values]
-            # if self.debug:
-            #     print(f'{attr}: {value}')
+            if self.debug:
+                print(f'{attr}: {value}')
             # check if value is 0s
             if value != '0' * num_values:
                 res += f'{attr} = ('
@@ -579,7 +594,7 @@ class Genetic:
         # get the output value
         for attr in self.outputs:
             # get number of values
-            num_values = int(lg(len(self.attributes[attr])))
+            num_values = round(lg(len(self.attributes[attr])))
             # get the value substring
             value = rule[:num_values]
             # if self.debug:
