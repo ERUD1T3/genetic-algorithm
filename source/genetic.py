@@ -554,10 +554,54 @@ class Genetic:
         # return the best individual
         return self.best
 
-    # TODO: implement
+    # TODO: test
     def decode_rule(self, rule)->str:
         '''Decode the rule binary to readable format'''
-        pass
+        res = ''
+        # get values from rule
+        for attr in self.inputs:
+            # get number of values
+            num_values = len(self.attributes[attr])
+            # get the value substring
+            value = rule[:num_values]
+            res += f'{attr} = ('
+            # get the attribute value
+            for i in range(num_values):
+                if value[i] == '1':
+                    res += f'{self.attributes[attr][i]} v '
+            # remove the last 'v '
+            res = res[:-3]
+            res += ') ^ '
+            # get rest of the rule
+            rule = rule[num_values:]
+
+        # remove the last '^ '
+        res = res[:-3]
+        res += '=> '
+
+        # get the output value
+        for attr in self.outputs:
+            # get number of values
+            num_values = int(lg(len(self.attributes[attr])))
+            # get the value substring
+            value = rule[:num_values]
+            res += f'{attr} = ('
+            # convert the value to decimal
+            index = int('0b'+ value, 2)
+            # get the attribute value
+            res += f'{self.attributes[attr][index]}'
+            res += ') ^ '
+            # get rest of the rule
+            rule = rule[num_values:]
+
+        # remove the last '^ '
+        res = res[:-3]
+        res += '\n'
+
+        return res
+
+            
+
 
     # TODO: test
     def print_individial(self, individual):
