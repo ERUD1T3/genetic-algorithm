@@ -13,7 +13,6 @@ from random import randint, choices, sample
 class Genetic:
     '''Main class for Genetic Algorithm'''
 
-
     def __init__(
         self, 
         training, 
@@ -141,9 +140,6 @@ class Genetic:
 
         return encoded
 
-        
-
-
     def read_data(self, path):
         '''Reads data from a file'''
         
@@ -261,7 +257,6 @@ class Genetic:
 
         return res
 
-    # TODO: test this function 
     def rule_classify(self, rule, example):
         '''Evaluates a rule on training example'''
 
@@ -277,7 +272,6 @@ class Genetic:
         else:
             return None
 
-    
     def classify(self, individual, example, voting=True):
         '''use an individual to classify the example using voting'''
 
@@ -381,7 +375,6 @@ class Genetic:
         '''Generates crossover points
             CAN BE IMPROVED FOR EFFICIENCY
         '''
-
         # get the length of the parent
         upper_bound = len(parent) - 1
         # get the crossover points
@@ -517,7 +510,7 @@ class Genetic:
         else:
             raise ValueError('Invalid Selection Type')
 
-
+    # TODO: test    
     def run(self):
         '''Run the Genetic Algorithm'''
         
@@ -552,11 +545,11 @@ class Genetic:
     
         # print the best individual
         print('Best Individual: ', self.best)
+        self.print_individial(self.best)
         # return the best individual
         return self.best
 
-    # TODO: test
-    def decode_rule(self, rule)->str:
+    def decode_rule(self, rule):
         '''Decode the rule binary to readable format'''
         res = ''
         # get values from rule
@@ -565,10 +558,8 @@ class Genetic:
             num_values = len(self.attributes[attr])
             # get the value substring
             value = rule[:num_values]
-
-            if self.debug:
-                print(f'{attr}: {value}')
-
+            # if self.debug:
+            #     print(f'{attr}: {value}')
             # check if value is 0s
             if value != '0' * num_values:
                 res += f'{attr} = ('
@@ -579,7 +570,6 @@ class Genetic:
                 # remove the last 'v '
                 res = res[:-3]
                 res += ') ^ '
-                
             # get rest of the rule
             rule = rule[num_values:]
 
@@ -593,10 +583,8 @@ class Genetic:
             num_values = int(lg(len(self.attributes[attr])))
             # get the value substring
             value = rule[:num_values]
-
-            if self.debug:
-                print(f'{attr}: {value}')
-
+            # if self.debug:
+            #     print(f'{attr}: {value}')
             res += f'{attr} = ('
             # convert the value to decimal
             index = int('0b'+ value, 2)
@@ -612,7 +600,6 @@ class Genetic:
 
         return res
 
-    # TODO: test
     def print_individial(self, individual):
         '''print an individual bit string'''
         # get rules 
