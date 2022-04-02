@@ -699,6 +699,6 @@ class Genetic:
         '''classify a rule for iris dataset'''
         pass
 
-    def encode_data_iris(self, instance):
-        '''encode the data for iris dataset'''
+    def bin_to_float_iris(self, bin_str):
+        '''convert a binary string to float'''
         pass
