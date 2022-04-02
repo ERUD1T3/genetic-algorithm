@@ -686,3 +686,19 @@ class Genetic:
     def discretize(self, data):
         '''Discretizes the data'''
         pass
+
+    def decode_rule_iris(self, rule):
+        '''decode a rule for iris dataset'''
+        pass 
+
+    def is_valid_iris(self, individual):
+        '''check if a rule is valid for iris dataset'''
+        pass
+
+    def rule_classify_iris(self, rule, example):
+        '''classify a rule for iris dataset'''
+        pass
+
+    def encode_data_iris(self, instance):
+        '''encode the data for iris dataset'''
+        pass
