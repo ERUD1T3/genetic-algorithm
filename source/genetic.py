@@ -42,15 +42,13 @@ class Genetic:
 
         # read the data
         self.attributes, self.inputs, self.outputs = self.read_attributes(attributes)
-        self.training = self.read_data(training)
-        self.testing = self.read_data(testing)
-
         # check if dataset is Iris
         if 'Iris' in self.attributes:
             # getting the precondition length
             # 4 attributes represented by 2 float boundaries 
             # each encoded as 6 bits using decimal to bin encoding
             # with 3 bits for integer part and 3 bits for decimal part 
+            self.iris = True
             self.int_len, self.dec_len = 3, 3
             self.bin_len = self.int_len + self.dec_len
             self.ante_len = 2 * self.bin_len * len(self.inputs) 
@@ -64,6 +62,7 @@ class Genetic:
                 print('Precondition Length: ', self.ante_len)
                 print('Postcondition Length: ', self.rule_len - self.ante_len)
         else:
+            self.iris = False
             # determine single rule length
             self.rule_len = 0
             # getting the precondition length
@@ -74,6 +73,9 @@ class Genetic:
             # getting the postcondition length
             for attr in self.outputs:
                 self.rule_len += round(lg(len(self.attributes[attr])))
+
+        self.training = self.read_data(training)
+        self.testing = self.read_data(testing)
 
         # max number of rules (should not be greater than 
         # number of examples present in the training set)
@@ -111,35 +113,40 @@ class Genetic:
         '''Displays the population'''
         print('Population: ', self.population)
 
-    def encode_data(self, instance)->str:
+    def encode_data(self, instance, just_output=False)->str:
         '''Encodes the instance'''
         encoded = ''
+        in_part = instance[:len(self.inputs)]
+        out_part = instance[len(self.inputs):]
 
-        # encode the inputs
-        for v in range(len(self.inputs)):
-            tmp = ''
-            # get value
-            value = instance[v]
-            # get attribute
-            attribute = self.inputs[v]
-            # get number of values
-            num_values = len(self.attributes[attribute])
-            # get index of value in attribute
-            index = self.attributes[attribute].index(value)
-            # set the bit of the index to 1 and rest to 0
-            for i in range(num_values):
-                tmp += '1' if i == index else '0'
+        if just_output:
+            # just encode output
+            out_part = instance
+        else:
+            # encode the inputs
+            for v in range(len(in_part)):
+                tmp = ''
+                # get value
+                value = in_part[v]
+                # get attribute
+                attribute = self.inputs[v]
+                # get number of values
+                num_values = len(self.attributes[attribute])
+                # get index of value in attribute
+                index = self.attributes[attribute].index(value)
+                # set the bit of the index to 1 and rest to 0
+                for i in range(num_values):
+                    tmp += '1' if i == index else '0'
 
-            # add tmp to encoded
-            encoded += tmp
-        
+                # add tmp to encoded
+                encoded += tmp
         # encode the outputs
-        for v in range(len(self.inputs), len(instance)):
+        for v in range(len(out_part)):
             tmp = ''
             # get value
-            value = instance[v]
+            value = out_part[v]
             # get attribute
-            attribute = self.outputs[v - len(self.inputs)]
+            attribute = self.outputs[v]
             # get number of values
             num_values = round(lg(len(self.attributes[attribute])))
             # get index of value in attribute
@@ -151,22 +158,23 @@ class Genetic:
 
         return encoded
 
+    # TODO: test the support for Iris
     def read_data(self, path):
         '''Reads data from a file'''
         
         data = []
-
         # read in the attributes
         with open(path, 'r') as f:
             for line in f:
                     words = line.strip().split()
-                    encoded = self.encode_data(words)
-
-                    # if self.debug:
-                    #     print('Words: ', words)
-                    #     print('Encoded: ', encoded)
-
-                    data.append(encoded)
+                    # check if dataset is Iris
+                    if not self.iris:
+                        # convert words to floats
+                        words = self.encode_data(words)
+                        # if self.debug:
+                        #     print('Words: ', words)
+                        #     print('Encoded: ', encoded)
+                    data.append(words)
                
         if self.debug:
             print('Read data: ', data)
@@ -187,20 +195,17 @@ class Genetic:
             for line in f:
                 if len(line) > 1:
                     words = line.strip().split()
-                    
                     # storing the attributes
                     attributes[words[0]] = words[1:]
-
-
                     # storing the inputs and outputs
                     if is_input:
                         inputs.append(words[0])
                     else:
                         outputs.append(words[0])
-
+                # about to ready the output atributes
                 else:
                     is_input = False
-          
+
         if self.debug:
             print('Attributes: ', attributes)
             print('Inputs: ', inputs)
@@ -212,7 +217,8 @@ class Genetic:
         return attributes, inputs, outputs
 
     def generate_individual(self):
-        '''Generates and return individual at random
+        '''
+        Generates and return individual at random
         '''
         # generate random length of individual
         individual_len = randint(1, self.ruleset_len) * self.rule_len
@@ -220,18 +226,16 @@ class Genetic:
         individual = ""
         for _ in range(individual_len):
             individual += str(randint(0, 1))
-
+        # return the individual
         return individual
 
     def generate_population(self, size):
         '''Generates a population of individuals'''
-
         # generate a population of individuals
         for _ in range(size):
             self.population.append(self.generate_individual())
-
-        if self.debug:
-            print('Population: ', self.population)
+        # print the population
+        if self.debug: print('Population: ', self.population)
 
     def mutate(self, population):
         '''Mutation of individuals at random
@@ -239,7 +243,6 @@ class Genetic:
         '''
         # get the population size
         pop_size = len(population)
-
         # choose population to mutate
         num_mutants = round(self.mutation_rate * pop_size)
         # sample the population of mutants the index of the mutants
@@ -252,36 +255,37 @@ class Genetic:
             population[mutant] = population[mutant][:bit] + \
                 str(1 - int(population[mutant][bit])) + \
                 population[mutant][bit + 1:]
-
         # if self.debug:
         #     print('Mutated Population: ', population)
-
         return population
     
     def and_operator(self, ante1, ante2):
         '''AND operator for antecedents'''
-
         res = ""
         for i in range(len(ante1)):
             res += '1' if ante1[i] == '1' and \
                  ante2[i] == '1' else '0'
-
         return res
 
+    # TODO: update to add support for Iris
     def rule_classify(self, rule, example):
         '''Evaluates a rule on training example'''
 
-        # get the rule antecedent
-        ante_r = rule[:self.ante_len]
-        ante_e = example[:self.ante_len]
-
-        # check if example satisfies the rule
-        if self.and_operator(ante_r, ante_e) == ante_e:
-            # get the rule consequent
-            cons_r = rule[self.ante_len:]
-            return cons_r
+        # check if dataset is Iris
+        if self.iris:
+            pass
         else:
-            return None
+            # get the rule antecedent
+            ante_r = rule[:self.ante_len]
+            ante_e = example[:self.ante_len]
+
+            # check if example satisfies the rule
+            if self.and_operator(ante_r, ante_e) == ante_e:
+                # get the rule consequent
+                cons_r = rule[self.ante_len:]
+                return cons_r
+            else:
+                return None
 
     def classify(self, individual, example, voting=True):
         '''use an individual to classify the example using voting'''
@@ -295,19 +299,13 @@ class Genetic:
                 rule = individual[r * self.rule_len: (r + 1) * self.rule_len]
                 # classify the example
                 res = self.rule_classify(rule, example)
-
+                # collect the votes
                 if res is not None:
-                    if res in votes:
-                        votes[res] += 1
-                    else:
-                        votes[res] = 1
-                
+                    if res in votes: votes[res] += 1
+                    else: votes[res] = 1
             # get the most voted class
             if len(votes) > 0:
                 most_voted = max(votes, key=votes.get)
-                # if self.debug:
-                #     print('Votes: ', votes)
-                #     print('Most voted: ', most_voted)
                 return most_voted
             else:
                 return None
@@ -320,33 +318,46 @@ class Genetic:
                 rule = individual[r * self.rule_len: (r + 1) * self.rule_len]
                 # classify the example
                 res = self.rule_classify(rule, example)
-
-                if res is not None:
-                    return res
-            
+                # return the result
+                if res is not None: return res
             return None
 
+    # TODO: test support for iris
     def test_accuracy(self, individual, data=None):
         '''Tests an individual on a dataset'''
         
         data = data or self.training
         corrects, incorrects = 0, 0
-        for example in data:
-            # get the class of the example
-            class_example = example[self.ante_len:]
-            # get the class of the individual
-            class_individual = self.classify(individual, example)
-            if class_individual == class_example:
-                corrects += 1
-            else:
-                incorrects += 1
+        # check if dataset is Iris
+        if self.iris:
+            for example in data:
+                # get the class of the example
+                class_example = example[len(self.inputs):]
+                # encode the class of the example
+                class_example = self.encode_data(class_example, True)
+                # get the class of the individual
+                class_individual = self.classify(individual, example)
+                # convert bin to float
+                if class_individual == class_example:
+                    corrects += 1
+                else:
+                    incorrects += 1
+        else:
+            for example in data:
+                # get the class of the example
+                class_example = example[self.ante_len:]
+                # get the class of the individual
+                class_individual = self.classify(individual, example)
+                if class_individual == class_example:
+                    corrects += 1
+                else:
+                    incorrects += 1
 
         accuracy = corrects / len(data)
         # if self.debug:
         #     print('Corrects: ', corrects)
         #     print('Incorrects: ', incorrects)
         #     print('Accuracy: ', accuracy)
-        
         return accuracy
 
     def fitness(self, individual):
@@ -387,7 +398,7 @@ class Genetic:
         return self.best
     
     
-    # TODO: fix bug where goes into infinite loop
+    # TODO: doesn't need to change but do a check
     def generate_crossover_pts(self, parent, d1=None, d2=None):
         '''Generates crossover points
             CAN BE IMPROVED FOR EFFICIENCY
@@ -428,6 +439,7 @@ class Genetic:
             # return the crossover points and distances
             return leftmost, rightmost, d1, d2
 
+    # TODO: update to support iris
     def is_valid(self, individual):
         '''Checks if an individual is valid'''
 
@@ -443,7 +455,6 @@ class Genetic:
         else:
             return True
 
-    # TODO: test this function
     def crossover_op(self, parent1, parent2):
         '''Crossover between two parents rules to generate
            two children of variable length'''
@@ -473,7 +484,6 @@ class Genetic:
 
     def get_probs(self):
         '''Returns the probabilities of each individual'''
-
         if len(self.fitnesses) == 0:
             self.evaluate()
 
@@ -482,7 +492,6 @@ class Genetic:
             sum_fitnesses = sum(self.fitnesses)
             # get the probabilities
             probs = [f / sum_fitnesses for f in self.fitnesses]
-            
             self.probs = probs
 
             return probs
@@ -494,9 +503,7 @@ class Genetic:
         # get the population size
         pop_size = len(self.population)
         # get number of individuals to crossover
-        
         num_pairs = round(self.replace_rate * pop_size) // 2
-        
         # get the probabilities
         probs = self.get_probs()
         # get the pairs of individuals to crossover
@@ -507,12 +514,10 @@ class Genetic:
         for i in range(0, len(pairs), 2):
             *twins, = self.crossover_op(
                 self.population[pairs[i]], 
-                self.population[pairs[i + 1]]
-            )
+                self.population[pairs[i + 1]])
             children += twins
 
         # add the children to the population
-        # self.population += children
         return children
 
     # TODO: implement
@@ -533,12 +538,6 @@ class Genetic:
         k_survivors = round((1 - self.replace_rate) * size)
         # get probabilities
         probs = self.get_probs()
-
-        # if self.debug:
-        #     print('num of probs: ', len(probs))
-        #     print('num of survivors: ', size)
-        #     print('stored size: ', len(self.population))
-
         # get the survivors 
         survivors = choices(population, probs, k=k_survivors)
         
@@ -579,21 +578,16 @@ class Genetic:
             # mutate
             self.mutate(new_population)
             # update
-            # check they are same size
-            # if self.debug:
-            #     print('new size: ', len(new_population))
-            #     print('old size: ', len(self.population))
             if len(new_population) != len(self.population):
                 raise ValueError('Population size mismatch')
-            self.population = new_population
+            else: self.population = new_population
             # evaluate
             self.evaluate()
             # keep the best individual
             # self.keep_best_individual()
             # stop early if threshold is reached
             if self.best[2] >= self.threshold:
-                if self.debug:
-                    print('Threshold Reached')
+                print('Threshold Reached')
                 break
     
         # print the best individual
@@ -653,21 +647,26 @@ class Genetic:
 
         return res
 
+    # TODO: tested
     def print_individial(self, individual):
         '''print an individual bit string'''
         # get rules 
         for r in range(0, len(individual), self.rule_len):
             rule = individual[r : r + self.rule_len]
-            # decode the rule
-            rule = self.decode_rule(rule)
+            # check if it's iris
+            if self.iris:
+                # decode iris rule 
+                rule = self.decode_rule_iris(rule)
+            else:
+                # decode the rule
+                rule = self.decode_rule(rule)
             # print the rule
             print(rule, end='')
 
     def test(self, data):
         '''Test the algorithm by testing best individual'''
         # get the best individual
-        if self.best is None:
-            self.run()
+        if self.best is None: self.run()
         # get accuracy of the best individual
         accuracy = self.test_accuracy(self.best[1], data)
         # print the accuracy
@@ -692,23 +691,17 @@ class Genetic:
             # self.population[0] = self.best[1]
             # maybe should swap with worse??
     
-    # TODO: implement to support continuous attributes
-    def discretize(self, data):
-        '''Discretizes the data'''
-        pass
-
+    # TODO: implement
     def decode_rule_iris(self, rule):
         '''decode a rule for iris dataset'''
         pass 
 
-    def is_valid_iris(self, individual):
-        '''check if a rule is valid for iris dataset'''
-        pass
-
+    # TODO: implement
     def rule_classify_iris(self, rule, example):
         '''classify a rule for iris dataset'''
         pass
 
+    # TODO: implement
     def bin_to_float_iris(self, bin_str):
         '''convert a binary string to float'''
         pass
