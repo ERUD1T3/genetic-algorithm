@@ -6,8 +6,6 @@
 #   Description: : main genetic algorithm file
 #############################################################
 
-from distutils.log import debug
-from turtle import right
 from utils import lg
 from random import randint, choice, choices, sample
 
@@ -47,32 +45,44 @@ class Genetic:
         self.training = self.read_data(training)
         self.testing = self.read_data(testing)
 
-        # if self.debug:
-        #     print('Attributes: ', self.attributes)
-        #     print('Order: ', self.order)
-        #     print('Final Attribute: ', self.order[-1])
+        # check if dataset is Iris
+        if 'Iris' in self.attributes:
+            # getting the precondition length
+            # 4 attributes represented by 2 float boundaries 
+            # each encoded as 6 bits using decimal to bin encoding
+            # with 3 bits for integer part and 3 bits for decimal part 
+            self.int_len, self.dec_len = 3, 3
+            self.bin_len = self.int_len + self.dec_len
+            self.ante_len = 2 * self.bin_len * len(self.inputs) 
+            self.rule_len = self.ante_len
+            # getting the postcondition length
+            for attr in self.outputs:
+                self.rule_len += round(lg(len(self.attributes[attr])))
 
-        # determine single rule length
-        self.rule_length = 0
-        # getting the precondition length
-        for attr in self.inputs:
-            self.rule_length += len(self.attributes[attr])
-        
-        # save the precondition length
-        self.ante_length = self.rule_length
-
-        # getting the postcondition length
-        for attr in self.outputs:
-            self.rule_length += round(lg(len(self.attributes[attr])))
+            if self.debug:
+                print('Rule Length: ', self.rule_len)
+                print('Precondition Length: ', self.ante_len)
+                print('Postcondition Length: ', self.rule_len - self.ante_len)
+        else:
+            # determine single rule length
+            self.rule_len = 0
+            # getting the precondition length
+            for attr in self.inputs:
+                self.rule_len += len(self.attributes[attr])
+            # save the precondition length
+            self.ante_len = self.rule_len
+            # getting the postcondition length
+            for attr in self.outputs:
+                self.rule_len += round(lg(len(self.attributes[attr])))
 
         # max number of rules (should not be greater than 
         # number of examples present in the training set)
         self.FACTOR = .5 # scaling factor to determine the max number of rules
-        self.ruleset_length = round(len(self.training) * self.FACTOR)
+        self.ruleset_len = round(len(self.training) * self.FACTOR)
 
         if self.debug:
-            print('Rule Length: ', self.rule_length)
-            print('Rules Max Count: ', self.ruleset_length)
+            print('Rule Length: ', self.rule_len)
+            print('Rules Max Count: ', self.ruleset_len)
 
         # instanting params for the GA
         self.population = [] # population
@@ -205,7 +215,7 @@ class Genetic:
         '''Generates and return individual at random
         '''
         # generate random length of individual
-        individual_len = randint(1, self.ruleset_length) * self.rule_length
+        individual_len = randint(1, self.ruleset_len) * self.rule_len
         # generate random individual
         individual = ""
         for _ in range(individual_len):
@@ -262,13 +272,13 @@ class Genetic:
         '''Evaluates a rule on training example'''
 
         # get the rule antecedent
-        ante_r = rule[:self.ante_length]
-        ante_e = example[:self.ante_length]
+        ante_r = rule[:self.ante_len]
+        ante_e = example[:self.ante_len]
 
         # check if example satisfies the rule
         if self.and_operator(ante_r, ante_e) == ante_e:
             # get the rule consequent
-            cons_r = rule[self.ante_length:]
+            cons_r = rule[self.ante_len:]
             return cons_r
         else:
             return None
@@ -279,10 +289,10 @@ class Genetic:
         if voting:
             votes = {}
             # split individual into rules
-            num_rules = len(individual) // self.rule_length
+            num_rules = len(individual) // self.rule_len
             for r in range(num_rules):
                 # get the rule
-                rule = individual[r * self.rule_length: (r + 1) * self.rule_length]
+                rule = individual[r * self.rule_len: (r + 1) * self.rule_len]
                 # classify the example
                 res = self.rule_classify(rule, example)
 
@@ -304,10 +314,10 @@ class Genetic:
 
         else:
             # split individual into rules
-            num_rules = len(individual) // self.rule_length
+            num_rules = len(individual) // self.rule_len
             for r in range(num_rules):
                 # get the rule
-                rule = individual[r * self.rule_length: (r + 1) * self.rule_length]
+                rule = individual[r * self.rule_len: (r + 1) * self.rule_len]
                 # classify the example
                 res = self.rule_classify(rule, example)
 
@@ -323,7 +333,7 @@ class Genetic:
         corrects, incorrects = 0, 0
         for example in data:
             # get the class of the example
-            class_example = example[self.ante_length:]
+            class_example = example[self.ante_len:]
             # get the class of the individual
             class_individual = self.classify(individual, example)
             if class_individual == class_example:
@@ -394,20 +404,20 @@ class Genetic:
             leftmost = min(cpt1, cpt2)
             rightmost = max(cpt1, cpt2)
             # get distances d1 and d2
-            d1 = leftmost % self.rule_length
-            d2 = rightmost % self.rule_length
+            d1 = leftmost % self.rule_len
+            d2 = rightmost % self.rule_len
             # return the crossover points and distances
             return leftmost, rightmost, d1, d2
         # get the crossover points matching d1 and d2
         else:
             # get candidate crossover points
             cpt3_candidates = [i for i in range(0, len(parent)) 
-                if i % self.rule_length == d1]
+                if i % self.rule_len == d1]
             if len(cpt3_candidates) == 0:
                 raise Exception('Invalid crossover')
             cpt3 = choice(cpt3_candidates)
             cpt4_candidates = [i for i in range(0, len(parent))
-                if i % self.rule_length == d2 and i != cpt3]
+                if i % self.rule_len == d2 and i != cpt3]
             if len(cpt4_candidates) == 0:
                 raise Exception('Invalid crossover')
             # get first random crossover points in parents
@@ -424,11 +434,11 @@ class Genetic:
         # get the length of the individual
         length = len(individual)
         # get the number of rules
-        num_rules = length // self.rule_length
+        num_rules = length // self.rule_len
         # check if the individual is valid
-        if length % self.rule_length != 0:
+        if length % self.rule_len != 0:
             return False
-        elif num_rules < 1 or num_rules > self.ruleset_length:
+        elif num_rules < 1 or num_rules > self.ruleset_len:
             return False
         else:
             return True
@@ -646,8 +656,8 @@ class Genetic:
     def print_individial(self, individual):
         '''print an individual bit string'''
         # get rules 
-        for r in range(0, len(individual), self.rule_length):
-            rule = individual[r : r + self.rule_length]
+        for r in range(0, len(individual), self.rule_len):
+            rule = individual[r : r + self.rule_len]
             # decode the rule
             rule = self.decode_rule(rule)
             # print the rule
