@@ -6,6 +6,7 @@
 #   Description: : main genetic algorithm file
 #############################################################
 
+from unicodedata import decimal
 from utils import lg
 from random import randint, choice, choices, sample
 
@@ -634,7 +635,7 @@ class Genetic:
             #     print(f'{attr}: {value}')
             res += f'{attr} = ('
             # convert the value to decimal
-            index = int('0b'+ value, 2)
+            index = int(value, 2)
             # get the attribute value
             res += f'{self.attributes[attr][index]}'
             res += ') ^ '
@@ -701,7 +702,18 @@ class Genetic:
         '''classify a rule for iris dataset'''
         pass
 
-    # TODO: implement
-    def bin_to_float_iris(self, bin_str):
+    def bin_to_float_iris(self, bin_str: str) -> float:
         '''convert a binary string to float'''
-        pass
+        # decompose the string
+        int_part = bin_str[:self.int_len]
+        dec_part = bin_str[self.int_len:]
+        # get integer part of the number
+        integer = int(int_part, 2)
+        # get the decimal part of the number
+        decimal = 0.0
+        for pos in range(self.dec_len):
+            bit = int(dec_part[pos])
+            decimal += bit * 2 ** -(pos + 1)
+
+        res = integer + decimal
+        return res 
