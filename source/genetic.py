@@ -274,7 +274,10 @@ class Genetic:
 
         # check if dataset is Iris
         if self.iris:
-            pass
+            # get the rule antecedent
+            ante_r = rule[:self.ante_len]
+            ante_e = example[:len(self.inputs)]
+            # check if 
         else:
             # get the rule antecedent
             ante_r = rule[:self.ante_len]
