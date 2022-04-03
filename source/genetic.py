@@ -271,13 +271,18 @@ class Genetic:
     # TODO: update to add support for Iris
     def rule_classify(self, rule, example):
         '''Evaluates a rule on training example'''
-
         # check if dataset is Iris
         if self.iris:
             # get the rule antecedent
             ante_r = rule[:self.ante_len]
             ante_e = example[:len(self.inputs)]
-            # check if 
+            # check if example is covered by rule
+            if self.is_match(ante_r, ante_e):
+                # get the rule consequent
+                cons_r = rule[self.ante_len:]
+                return cons_r
+            else:
+                return None
         else:
             # get the rule antecedent
             ante_r = rule[:self.ante_len]
@@ -443,7 +448,7 @@ class Genetic:
             # return the crossover points and distances
             return leftmost, rightmost, d1, d2
 
-    # TODO: update to support iris
+    # TODO: test
     def is_valid(self, individual):
         '''Checks if an individual is valid'''
 
@@ -455,6 +460,8 @@ class Genetic:
         if length % self.rule_len != 0:
             return False
         elif num_rules < 1 or num_rules > self.ruleset_len:
+            return False
+        elif self.iris and individual[self.ante_len:] == '11':
             return False
         else:
             return True
@@ -485,7 +492,6 @@ class Genetic:
                 if e == 'Invalid crossover':
                     continue
         
-
     def get_probs(self):
         '''Returns the probabilities of each individual'''
         if len(self.fitnesses) == 0:
@@ -525,7 +531,7 @@ class Genetic:
         return children
 
     # TODO: implement
-    def tournament_selection(self):
+    def tournament_selection(self, population):
         '''Tournament selection of survivors'''
         pass
 
@@ -695,15 +701,62 @@ class Genetic:
             # self.population[0] = self.best[1]
             # maybe should swap with worse??
     
-    # TODO: implement
+    # TODO: test
     def decode_rule_iris(self, rule):
         '''decode a rule for iris dataset'''
-        pass 
+        res = ''
+        # go through inputs
+        for i in range(len(self.inputs)):
+            # get the attribute
+            attr = self.inputs[i]
+            # get the lower and upper bounds values
+            values = rule[i * self.bin_len * 2: (i + 1) * self.bin_len * 2]
+            # get the lower bound
+            lower = self.bin_to_float_iris(values[:self.bin_len])
+            # get the upper bound
+            upper = self.bin_to_float_iris(values[self.bin_len:])
+            # adding to result
+            res += f'({lower} <= {attr} <= {upper}) ^ '
+        
+        # remove the last '^ '
+        res = res[:-3]
+        res += ' => '
+        # get the output value
+        for i in range(len(self.outputs)):
+            # get the attribute
+            attr = self.outputs[i]
+            # get the value
+            value = rule[self.ante_len:]
+            # convert to decimal
+            index = int(value, 2)
+            # get the attribute value
+            res += f'{attr} = ({self.attributes[attr][index]} ^ '
+        # remove the last '^ '
+        res = res[:-3]
+        res += '\n'
 
-    # TODO: implement
-    def rule_classify_iris(self, rule, example):
+        return res
+
+    # TODO: test
+    def is_match(self, ante_r: str, ante_e: list)-> bool:
         '''classify a rule for iris dataset'''
-        pass
+        for i in range(0, self.rule_len, self.bin_len * 2):
+            # decompose antecedent rule
+            r_lower = ante_r[i:i+self.bin_len]
+            r_lower = self.bin_to_float_iris(r_lower)
+            r_upper = ante_r[i+self.bin_len:i+self.bin_len*2]
+            r_upper = self.bin_to_float_iris(r_upper)
+            # get example value
+            index = i // (self.bin_len * 2)
+            e_value = float(ante_e[index])
+            # check if it's a match
+            if r_lower == 0.0 and r_upper == 0.0 or \
+                r_lower == 0.0 and e_value > r_upper or \
+                r_upper == 0.0 and e_value < r_lower or \
+                not (r_lower <= e_value <= r_upper):
+                return False
+        return True
+            
 
     def bin_to_float_iris(self, bin_str: str) -> float:
         '''convert a binary string to float'''

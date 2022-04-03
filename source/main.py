@@ -129,17 +129,17 @@ def main():
     print('\nGenetic Algorithm object created:')
     print(ga)
     
-    # run the genetic algorithm
-    print('\nRunning the Genetic Algorithm...')
-    ga.run()
-    print('\nDone!')
+    # # run the genetic algorithm
+    # print('\nRunning the Genetic Algorithm...')
+    # ga.run()
+    # print('\nDone!')
 
-    # test best solution
-    print('\nTesting the best solution on training set...')
-    ga.test(ga.training)
+    # # test best solution
+    # print('\nTesting the best solution on training set...')
+    # ga.test(ga.training)
 
-    print('\nTesting the best solution on test set...')
-    ga.test(ga.testing)
+    # print('\nTesting the best solution on test set...')
+    # ga.test(ga.testing)
 
     
 
