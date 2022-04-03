@@ -3,7 +3,7 @@ python source/main.py \
 -d data/iris/iris-train.txt \
 -t data/iris/iris-test.txt \
 -p 10 \
--m .5 \
+-m 1e-3 \
 -r .5 \
 -g 100 \
 -f .9 \

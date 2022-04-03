@@ -234,7 +234,12 @@ class Genetic:
         '''Generates a population of individuals'''
         # generate a population of individuals
         for _ in range(size):
-            self.population.append(self.generate_individual())
+            individual = self.generate_individual()
+            # check if the individual is valid
+            while not self.is_valid(individual):
+                individual = self.generate_individual()
+            # add valid individual to population
+            self.population.append(individual)
         # print the population
         if self.debug: print('Population: ', self.population)
 
@@ -459,12 +464,18 @@ class Genetic:
         # check if the individual is valid
         if length % self.rule_len != 0:
             return False
-        elif num_rules < 1 or num_rules > self.ruleset_len:
+        if num_rules < 1 or num_rules > self.ruleset_len:
             return False
-        elif self.iris and individual[self.ante_len:] == '11':
-            return False
-        else:
-            return True
+        if self.iris:
+            # check each rule
+            for r in range(num_rules):
+                # get the rule
+                rule = individual[r * self.rule_len: (r + 1) * self.rule_len]
+                # check if the rule is valid
+                if rule[self.ante_len:] == '11':
+                    return False
+        
+        return True
 
     def crossover_op(self, parent1, parent2):
         '''Crossover between two parents rules to generate
@@ -500,8 +511,12 @@ class Genetic:
         if len(self.probs) == 0:
             # get the sum of fitnesses
             sum_fitnesses = sum(self.fitnesses)
-            # get the probabilities
-            probs = [f / sum_fitnesses for f in self.fitnesses]
+            if sum_fitnesses == 0:
+                probs = [0.0 for _ in self.fitnesses]
+                # raise Exception('Invalid sum of fitnesses')
+            else:
+                # get the probabilities
+                probs = [f / sum_fitnesses for f in self.fitnesses]
             self.probs = probs
 
             return probs
@@ -730,7 +745,7 @@ class Genetic:
             # convert to decimal
             index = int(value, 2)
             # get the attribute value
-            res += f'{attr} = ({self.attributes[attr][index]} ^ '
+            res += f'{attr} = ({self.attributes[attr][index]}) ^ '
         # remove the last '^ '
         res = res[:-3]
         res += '\n'
@@ -740,7 +755,7 @@ class Genetic:
     # TODO: test
     def is_match(self, ante_r: str, ante_e: list)-> bool:
         '''classify a rule for iris dataset'''
-        for i in range(0, self.rule_len, self.bin_len * 2):
+        for i in range(0, self.ante_len, self.bin_len * 2):
             # decompose antecedent rule
             r_lower = ante_r[i:i+self.bin_len]
             r_lower = self.bin_to_float_iris(r_lower)

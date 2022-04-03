@@ -10,10 +10,10 @@
             "request": "launch",
             "program": "${workspaceFolder}\\source\\main.py",
             "args": [
-                "-a", "${workspaceFolder}\\data\\tennis\\tennis-attr.txt",  
-                "-d", "${workspaceFolder}\\data\\tennis\\tennis-train.txt", 
-                "-t", "${workspaceFolder}\\data\\tennis\\tennis-test.txt",
-                "-p", "1000", "-m", ".001", "-r", ".6", "-g", "100", 
+                "-a", "${workspaceFolder}\\data\\iris\\iris-attr.txt",  
+                "-d", "${workspaceFolder}\\data\\iris\\iris-train.txt", 
+                "-t", "${workspaceFolder}\\data\\iris\\iris-test.txt",
+                "-p", "500", "-m", ".001", "-r", ".6", "-g", "200", 
                 "-f",  ".9", "-s", "P", "--debug"
             ],
             "console": "integratedTerminal",
