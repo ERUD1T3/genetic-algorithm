@@ -159,7 +159,6 @@ class Genetic:
 
         return encoded
 
-    # TODO: test the support for Iris
     def read_data(self, path):
         '''Reads data from a file'''
         
@@ -273,7 +272,6 @@ class Genetic:
                  ante2[i] == '1' else '0'
         return res
 
-    # TODO: update to add support for Iris
     def rule_classify(self, rule, example):
         '''Evaluates a rule on training example'''
         # check if dataset is Iris
@@ -336,7 +334,6 @@ class Genetic:
                 if res is not None: return res
             return None
 
-    # TODO: test support for iris
     def test_accuracy(self, individual, data=None):
         '''Tests an individual on a dataset'''
         
@@ -411,8 +408,6 @@ class Genetic:
 
         return self.best
     
-    
-    # TODO: doesn't need to change but do a check
     def generate_crossover_pts(self, parent, d1=None, d2=None):
         '''Generates crossover points
             CAN BE IMPROVED FOR EFFICIENCY
@@ -453,7 +448,7 @@ class Genetic:
             # return the crossover points and distances
             return leftmost, rightmost, d1, d2
 
-    # TODO: test
+    # became expensive for iris
     def is_valid(self, individual):
         '''Checks if an individual is valid'''
 
@@ -474,7 +469,18 @@ class Genetic:
                 # check if the rule is valid
                 if rule[self.ante_len:] == '11':
                     return False
-        
+
+                ante = rule[:self.ante_len]
+                for i in range(0, self.ante_len, self.bin_len * 2):
+                    # decompose antecedent rule
+                    r_lower = ante[i:i+self.bin_len]
+                    r_lower = self.bin_to_float_iris(r_lower)
+                    r_upper = ante[i+self.bin_len:i+self.bin_len*2]
+                    r_upper = self.bin_to_float_iris(r_upper)
+                    # check if antecedent rule is valid
+                    if r_lower > r_upper:
+                        return False
+            
         return True
 
     def crossover_op(self, parent1, parent2):
@@ -672,7 +678,6 @@ class Genetic:
 
         return res
 
-    # TODO: tested
     def print_individial(self, individual):
         '''print an individual bit string'''
         # get rules 
@@ -716,7 +721,6 @@ class Genetic:
             # self.population[0] = self.best[1]
             # maybe should swap with worse??
     
-    # TODO: test
     def decode_rule_iris(self, rule):
         '''decode a rule for iris dataset'''
         res = ''
@@ -752,7 +756,6 @@ class Genetic:
 
         return res
 
-    # TODO: test
     def is_match(self, ante_r: str, ante_e: list)-> bool:
         '''classify a rule for iris dataset'''
         for i in range(0, self.ante_len, self.bin_len * 2):
@@ -765,9 +768,7 @@ class Genetic:
             index = i // (self.bin_len * 2)
             e_value = float(ante_e[index])
             # check if it's a match
-            if r_lower == 0.0 and r_upper == 0.0 or \
-                r_lower == 0.0 and e_value > r_upper or \
-                r_upper == 0.0 and e_value < r_lower or \
+            if r_lower == 0.0 or r_upper == 0.0 or r_lower > r_upper or \
                 not (r_lower <= e_value <= r_upper):
                 return False
         return True
