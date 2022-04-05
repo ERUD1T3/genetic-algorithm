@@ -4,7 +4,7 @@ python source/main.py \
 -t data/iris/iris-test.txt \
 -p 1000 \
 -m 1e-3 \
--r .4 \
+-r .5 \
 -g 500 \
 -f .9 \
 -s P \

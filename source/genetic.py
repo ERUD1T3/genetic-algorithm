@@ -379,8 +379,8 @@ class Genetic:
         # get length of individual
         length = len(individual)
         # get the fitness
-        fitness = accuracy ** 2 / length ** .5
-        # fitness = accuracy ** 2
+        # fitness = accuracy ** 2 / length ** .5
+        fitness = accuracy ** 2
         # return the fitness
         return fitness
 
