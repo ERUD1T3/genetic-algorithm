@@ -19,7 +19,7 @@ def main():
     training_path = 'data/iris/iris-train.txt'
     testing_path = 'data/iris/iris-test.txt'
     attributes_path = 'data/iris/iris-attr.txt'
-    population_size = 500 
+    population_size = 200 
     mutation_rate = .001
     replacement_rate = .6 # from GABIL
     generations = 500

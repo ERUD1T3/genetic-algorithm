@@ -18,10 +18,10 @@ def main():
     training_path = 'data/tennis/tennis-train.txt'
     testing_path = 'data/tennis/tennis-test.txt'
     attributes_path = 'data/tennis/tennis-attr.txt'
-    population_size = 500 
+    population_size = 200 
     mutation_rate = .001
     # replacement_rate = .6 # from GABIL
-    generations = 300
+    generations = 100
     fitness_threshold = 1.0 # used for early stopping
     selection_strategies = ['P', 'R', 'T'] # 'P' for proportional selection, 
                             # 'R' for rank selection,

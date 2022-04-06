@@ -233,11 +233,14 @@ class Genetic:
     def generate_population(self, size):
         '''Generates a population of individuals'''
         # generate a population of individuals
-        for _ in range(size):
+        for n in range(size):
             individual = self.generate_individual()
             # check if the individual is valid
             while not self.is_valid(individual):
                 individual = self.generate_individual()
+
+            # print individual number generated
+            print('Generated valid individual number: ', n)
             # add valid individual to population
             self.population.append(individual)
         # print the population
@@ -300,7 +303,7 @@ class Genetic:
             else:
                 return None
 
-    def classify(self, individual, example, voting=False):
+    def classify(self, individual, example, voting=True):
         '''use an individual to classify the example using voting'''
 
         if voting:
