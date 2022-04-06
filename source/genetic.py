@@ -6,7 +6,7 @@
 #   Description: : main genetic algorithm file
 #############################################################
 
-from unicodedata import decimal
+
 from utils import lg
 from random import randint, choice, choices, sample
 

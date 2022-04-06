@@ -10,8 +10,6 @@
 # import argparse
 from genetic import Genetic
 
-
-
 def main():
     '''main of the program'''
 
