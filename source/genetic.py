@@ -299,7 +299,7 @@ class Genetic:
             else:
                 return None
 
-    def classify(self, individual, example, voting=True):
+    def classify(self, individual, example, voting=False):
         '''use an individual to classify the example using voting'''
 
         if voting:
@@ -551,15 +551,46 @@ class Genetic:
         # add the children to the population
         return children
 
-    # TODO: implement
-    def tournament_selection(self, population):
+    # TODO: test
+    def tournament_selection(self, population: list[str], k: int) -> list[str]:
         '''Tournament selection of survivors'''
-        pass
+        # get the population size
+        size = len(population)
+        # get the number of survivors to select
+        k_survivors = round((1 - self.replace_rate) * size)
+        # get all individual indexes
+        all_inds = list(range(size))
+        # get the indexes of the k individuals with highest fitness
+        bests = []
+        for _ in range(k_survivors):
+            # get k individuals at random
+            k_inds = sample(all_inds, k)
+            # get the best of the k individuals
+            best = max(k_inds, key=lambda i: self.fitness(population[i]))
+            # remove the best individual from the population
+            all_inds.remove(best)
+            # add the best individual to the bests
+            bests.append(population[best])
 
-    # TODO: implement
+        return bests
+
+    # TODO: test
     def rank_selection(self, population):
         '''Rank selection of survivors'''
-        pass
+        # get the population size
+        size = len(population)
+        # get the number of survivors to select
+        k_survivors = round((1 - self.replace_rate) * size)
+        # sort the population by fitness
+        population = sorted(population, reverse=True,
+                    key=lambda x: self.fitness(x))
+        # get probabilities based on rank
+        probs = [1 - (i / size) for i in range(size)]
+        # get the survivors based on probabilities
+        survivors = choices(population, probs, k=k_survivors) 
+        # return the survivors
+        return survivors
+
 
     def proportional_selection(self, population):
         '''Fitness proportional selection of parents'''
@@ -571,7 +602,7 @@ class Genetic:
         probs = self.get_probs()
         # get the survivors 
         survivors = choices(population, probs, k=k_survivors)
-        
+        # return the survivors
         return survivors
 
     def select(self):
@@ -581,7 +612,8 @@ class Genetic:
         if self.selection_type == 'P':
             return self.proportional_selection(self.population)
         elif self.selection_type == 'T':
-            return self.tournament_selection(self.population)
+            tournament_size = 2
+            return self.tournament_selection(self.population, tournament_size)
         elif self.selection_type == 'R':
             return self.rank_selection(self.population)
         else:
