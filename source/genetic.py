@@ -552,7 +552,6 @@ class Genetic:
         # add the children to the population
         return children
 
-    # TODO: test
     def tournament_selection(self, population: list[str], k: int) -> list[str]:
         '''Tournament selection of survivors'''
         # get the population size
@@ -575,7 +574,6 @@ class Genetic:
 
         return bests
 
-    # TODO: test
     def rank_selection(self, population):
         '''Rank selection of survivors'''
         # get the population size
@@ -736,6 +734,8 @@ class Genetic:
         accuracy = self.test_accuracy(self.best[1], data)
         # print the accuracy
         print(f'Accuracy: {accuracy * 100}%')
+        # return the accuracy
+        return accuracy
             
     def keep_best_individual(self):
         '''put the best back they were removed'''

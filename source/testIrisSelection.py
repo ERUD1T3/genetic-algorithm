@@ -28,13 +28,15 @@ def main():
                             # 'R' for rank selection,
                             # 'T' for tournament selection
     debug = False
+
+    accuracies = []
     
     # vary the selection strategy
     for selection_strategy in selection_strategies:
         # print the selection strategy
         print('\nSelection Strategy:', selection_strategy)
         # vary the replacement rate
-        for generations in range(100, 300, 50):
+        for generations in range(50, 301, 50):
             # print the generations number
             print('\nGenerations:', generations)
             print('\nCreating a Genetic Algorithm object...')
@@ -65,8 +67,11 @@ def main():
             # ga.test(ga.training)
 
             print('\nTesting the best solution on test set...')
-            ga.test(ga.testing)
+            accuracy = ga.test(ga.testing)
+            accuracies.append(accuracy)
 
+        print('\nAccuracies:', accuracies)
+        accuracies.clear()
     
 
     
