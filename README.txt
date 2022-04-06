@@ -53,10 +53,10 @@ $ python3 main.py -h
 
 To run the different experiment files, use the following  command:
 
-$ python3 testTennis.py 
-$ python3 testIris.py
-$ python3 testIrisSelection.py
-$ python3 testIrisReplacement.py
+$ python3 testTennis.py > output.txt
+$ python3 testIris.py > output.txt
+$ python3 testIrisSelection.py > output.txt
+$ python3 testIrisReplacement.py > output.txt
 
 where python3 is the python 3.X.X interpreter, and provided the data files are present 
 and in the same directory as the experiment files

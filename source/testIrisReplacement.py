@@ -15,9 +15,9 @@ from genetic import Genetic
 def main():
     '''main of the program'''
 
-    training_path = 'data/tennis/tennis-train.txt'
-    testing_path = 'data/tennis/tennis-test.txt'
-    attributes_path = 'data/tennis/tennis-attr.txt'
+    training_path = 'data/iris/iris-train.txt'
+    testing_path = 'data/iris/iris-test.txt'
+    attributes_path = 'data/iris/iris-attr.txt'
     population_size = 200 
     mutation_rate = .001
     # replacement_rate = .6 # from GABIL
