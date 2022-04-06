@@ -35,7 +35,8 @@ def main():
         # print the selection strategy
         print('\nSelection Strategy:', selection_strategy)
         # vary the replacement rate
-        for replacement_rate in range(.1, .9, .1):
+        for r_rate in range(1, 10, 1):
+            replacement_rate = r_rate/10
             # print the replacement rate
             print('\nReplacement rate:', replacement_rate)
             print('\nCreating a Genetic Algorithm object...')
