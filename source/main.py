@@ -1,7 +1,7 @@
 ############################################################
 #   Dev: Josias Moukpe
 #   Class: Machine Learning
-#   Date: 2/23/2022
+#   Date: 4/6/2022
 #   file: main.py
 #   Description: main file to run the program
 #############################################################

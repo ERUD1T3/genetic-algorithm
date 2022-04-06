@@ -1,10 +1,6 @@
-# genetic-algorithm
-repo for genetic algorithm
-
 This is an implementation of Genetic algorithm with support for fitness-proportional, rank, 
 and tournament selections, support for rule voting, iris dataset, and early stopping with 
 fitness threshold.
-```
     main.py                     (main file with options)
     genetic.py                  (dependency for genetic algorithm functionalities)
     utils.py                    (dependency for utility functions used)
@@ -13,12 +9,11 @@ fitness threshold.
     testIrisSelection.py        (main Iris with selection strategy experiment file)
     testIrisReplacement.py      (main Iris with replacement rate experiment file)
     data/                       (directory of all required attribute, training and testing files)
-```
 
 No need to compile since the Python files are interpreted
 
 To run the tree with options, use the following command example:
-```
+
 $ python source/main.py \
 -a data/tennis/tennis-attr.txt \
 -d data/tennis/tennis-train.txt \
@@ -30,7 +25,7 @@ $ python source/main.py \
 -f 1. \
 -s P \
 --debug
-```
+
 where python3 is the python 3.X.X interpreter, 
     optional arguments:
   -a ATTRIBUTES, --attributes ATTRIBUTES
@@ -54,16 +49,15 @@ where python3 is the python 3.X.X interpreter,
   --debug               debug mode, prints statements activated (optional)
 
 To find out about the options, use:
-```
 $ python3 main.py -h 
-```
+
 To run the different experiment files, use the following  command:
-```
+
 $ python3 testTennis.py 
 $ python3 testIris.py
 $ python3 testIrisSelection.py
 $ python3 testIrisReplacement.py
-```
+
 where python3 is the python 3.X.X interpreter, and provided the data files are present 
 and in the same directory as the experiment files
 

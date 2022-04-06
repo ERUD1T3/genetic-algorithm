@@ -3,7 +3,10 @@
 #   Class: Machine Learning
 #   Date: 2/23/2022
 #   file: testIris.py
-#   Description: main file to run the program
+#   Description: main file to run the program for iris
+#   output the learned rules (in human-readable form 
+#   similar to HW2), and accuracy on training
+#   and test sets.
 #############################################################
 
 # imports

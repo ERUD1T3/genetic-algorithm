@@ -3,7 +3,10 @@
 #   Class: Machine Learning
 #   Date: 2/23/2022
 #   file: testTennis.py
-#   Description: main file to run the program
+#   Description: main file to run the program for testing
+#   on the tennis dataset. output the learned rules 
+#   (in human-readable form similar to HW2), and accuracy on
+#   training and test sets.
 #############################################################
 
 # imports
@@ -18,11 +21,11 @@ def main():
     training_path = 'data/tennis/tennis-train.txt'
     testing_path = 'data/tennis/tennis-test.txt'
     attributes_path = 'data/tennis/tennis-attr.txt'
-    population_size = 500 
+    population_size = 1000 
     mutation_rate = .001
     replacement_rate = .6 # from GABIL
-    generations = 500
-    fitness_threshold = 1.0 # used for early stopping
+    generations = 250
+    fitness_threshold = 1. # used for early stopping
     selection_strategy = 'P' # 'P' for proportional selection, 
                             # 'R' for rank selection,
                             # 'T' for tournament selection

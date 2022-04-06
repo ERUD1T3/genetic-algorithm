@@ -1,7 +1,7 @@
 ############################################################
 #   Dev: Josias Moukpe
 #   Class: Machine Learning
-#   Date: 2/22/2022
+#   Date: 4/6/2022
 #   file: genetic.py
 #   Description: : main genetic algorithm file
 #############################################################
@@ -94,6 +94,7 @@ class Genetic:
         self.best = None # index, value, fitness of best individual
 
         # generate the population
+        print('Generating a valid population...')
         self.generate_population(size)
 
 
@@ -379,8 +380,8 @@ class Genetic:
         # get length of individual
         length = len(individual)
         # get the fitness
-        # fitness = accuracy ** 2 / length ** .5
-        fitness = accuracy ** 2
+        fitness = accuracy ** 2 / length ** .25
+        # fitness = accuracy ** 2
         # return the fitness
         return fitness
 
@@ -629,8 +630,8 @@ class Genetic:
         # print the best individual
         # print('Best Individual: ', self.best)
         for g in range(self.max_generations):
-            if self.debug:
-                print('Generation: ', g)
+            # print the generation number
+            print('Generation: ', g)
             new_population = []
             # get the survivors
             survivors = self.select()
@@ -655,6 +656,8 @@ class Genetic:
     
         # print the best individual
         print('Final Best Individual: ', self.best)
+        # print the rules of the best individual
+        print('Rules of the best individual: \n')
         self.print_individial(self.best[1])
         # return the best individual
         return self.best

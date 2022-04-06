@@ -3,7 +3,10 @@
 #   Class: Machine Learning
 #   Date: 2/23/2022
 #   file: testIrisReplacement.py
-#   Description: main file to run the program
+#   Description: vary replacement rate r 
+#   [.1 to .9, .1 increment], output replacement 
+#   rate andtest set accuracy for each of the 
+#   three selection strategies.
 #############################################################
 
 # imports

@@ -1,7 +1,7 @@
 ############################################################
 #   Dev: Josias Moukpe
 #   Class: Machine Learning
-#   Date: 2/22/2022
+#   Date: 4/6/2022
 #   file: utils.py
 #   Description: utility functions for the genetic algorithm
 #############################################################

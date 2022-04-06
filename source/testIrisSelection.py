@@ -1,9 +1,11 @@
 ############################################################
 #   Dev: Josias Moukpe
 #   Class: Machine Learning
-#   Date: 2/23/2022
+#   Date: 4/6/2022
 #   file: testIrisSelection.py
-#   Description: main file to run the program
+#   Description: vary generation number, output 
+#   generation number and test set accuracy for each
+#   of the three selection strategies
 #############################################################
 
 # imports
