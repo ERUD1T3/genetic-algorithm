@@ -555,7 +555,7 @@ class Genetic:
         # add the children to the population
         return children
 
-    def tournament_selection(self, population: list[str], k: int) -> list[str]:
+    def tournament_selection(self, population, k):
         '''Tournament selection of survivors'''
         # get the population size
         size = len(population)
