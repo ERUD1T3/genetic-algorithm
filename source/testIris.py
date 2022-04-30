@@ -19,9 +19,9 @@ def main():
     training_path = 'data/iris/iris-train.txt'
     testing_path = 'data/iris/iris-test.txt'
     attributes_path = 'data/iris/iris-attr.txt'
-    population_size = 200 
+    population_size = 1000
     mutation_rate = .001
-    replacement_rate = .6 # from GABIL
+    replacement_rate = .5 # from GABIL
     generations = 500
     fitness_threshold = 1.0 # used for early stopping
     selection_strategy = 'P' # 'P' for proportional selection, 
