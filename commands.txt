@@ -14,10 +14,10 @@ python source/main.py \
 -a data/tennis/tennis-attr.txt \
 -d data/tennis/tennis-train.txt \
 -t data/tennis/tennis-test.txt \
--p 500 \
+-p 200 \
 -m .001 \
 -r .6 \
--g 250 \
+-g 500 \
 -f 1. \
 -s P \
 --debug
